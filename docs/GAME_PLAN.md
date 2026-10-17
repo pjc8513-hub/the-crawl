@@ -1,6 +1,6 @@
 # Crawl: design and implementation plan
 
-Status: planning baseline, 2026-10-16, with floor generation, automatic combat, tactics and the single-floor UI loop implemented. See [UI_PROTOTYPE.md](UI_PROTOTYPE.md) for the current screens, camp, gear choices and verification. [FLOOR_PROTOTYPE.md](FLOOR_PROTOTYPE.md) and [COMBAT_PROTOTYPE.md](COMBAT_PROTOTYPE.md) describe the earlier subsystem milestones. M4 now has results, room actions, one-of-three gear, limited camp and run completion. M5 persistent progression and saves remain unimplemented. The audit below records the original baseline.
+Status: updated 2026-10-17. M0-M5 now have working implementations: seeded floors, automatic combat, tactics, the single-floor UI loop, permanent upgrades, gold settlement and versioned checkpoint saves. See [PROGRESSION.md](PROGRESSION.md) for the lodge, persistence behavior and verification, and [UI_PROTOTYPE.md](UI_PROTOTYPE.md) for room screens. [FLOOR_PROTOTYPE.md](FLOOR_PROTOTYPE.md) and [COMBAT_PROTOTYPE.md](COMBAT_PROTOTYPE.md) record earlier subsystem milestones. M6 content breadth and final balance remain. The audit below records the original baseline.
 
 ## Product goal
 

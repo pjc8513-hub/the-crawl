@@ -2,6 +2,7 @@ class_name CrawlCombatant
 extends RefCounted
 
 var id: String
+var class_id: String = ""
 var display_name: String
 var side: String = "party"
 var group_id: String
@@ -33,6 +34,7 @@ func hp_percent() -> float:
 
 func from_class(definition: CrawlClassDefinition, actor_id: String) -> void:
 	id = actor_id
+	class_id = definition.id
 	group_id = actor_id
 	display_name = definition.display_name
 	max_hp = maxi(1, definition.max_hp)

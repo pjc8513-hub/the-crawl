@@ -19,6 +19,7 @@ func verify(condition: bool, message: String) -> void:
 
 func _run() -> void:
 	scene = load("res://scenes/main.tscn").instantiate()
+	scene.persistence_enabled = false
 	root.add_child(scene)
 	scene.set_process(false)
 	for size_value in [Vector2i(960, 600), Vector2i(1280, 720), Vector2i(1920, 1080)]:

@@ -4,7 +4,7 @@ extends RefCounted
 
 var run_seed: int
 var generator_version: int = 1
-var content_version: int = 3
+var content_version: int = 4
 var floor_depth: int = 1
 var layout_seed: int
 var encounter_seed: int

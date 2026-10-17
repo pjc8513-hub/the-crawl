@@ -1,5 +1,7 @@
 # Dungeon UI and room loop
 
+Update 2026-10-17: the lodge, permanent purchases, gold banking and checkpoint saves are now implemented. See [PROGRESSION.md](PROGRESSION.md) for the current startup flow, save behavior and content version 4. The notes below record the earlier UI milestone.
+
 The main scene now provides a complete single-floor screen sequence: exploration -> automatic combat -> results -> room actions -> camp or chest -> exploration, with a mandatory gear choice after the floor boss and a final run summary. The original `Main` scene structure remains in place; the unused SubViewports and ScreenFilter stay hidden.
 
 ## Controls and screens

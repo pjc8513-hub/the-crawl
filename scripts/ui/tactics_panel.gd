@@ -38,10 +38,12 @@ func rebuild() -> void:
 		var name_label := CrawlGameTheme.label(header, actor.display_name, true)
 		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		CrawlGameTheme.button(header, "Add rule", func() -> void:
+			if actor.tactics.size() >= 32: return
 			serial += 1
+			while actor.tactics.any(func(existing: CrawlTacticRule) -> bool: return existing.id == "custom:%s:%d" % [actor.id, serial]): serial += 1
 			actor.tactics.append(CrawlCombatContent.rule("custom:%s:%d" % [actor.id, serial], "always", 0, "attack", "lowest_hp"))
 			call_deferred("rebuild")
-		)
+		, "A member can have up to 32 rules." if actor.tactics.size() >= 32 else "")
 		for index in range(actor.tactics.size()):
 			_build_rule(actor, index)
 

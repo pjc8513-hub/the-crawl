@@ -10,6 +10,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	var scene: Node = load("res://scenes/main.tscn").instantiate()
+	scene.persistence_enabled = false
 	root.add_child(scene)
 	scene.set_process(false) # Drive the same playback method with controlled frame deltas.
 	await process_frame

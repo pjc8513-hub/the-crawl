@@ -6,3 +6,4 @@
 /tests/preview_*.png*
 /tests/preview.log
 /tests/ui_flow.log
+/tests/progression_ui.log

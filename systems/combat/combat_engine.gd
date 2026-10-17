@@ -7,6 +7,7 @@ var actors: Array[CrawlCombatant] = []
 var party: Array[CrawlCombatant] = []
 var groups: Array[EnemyGroup] = []
 var skills: Dictionary = {}
+var enemy_skills: Dictionary = {}
 var events: Array[Dictionary] = []
 var round_index: int = 0
 var round_limit: int = 100
@@ -22,6 +23,7 @@ func configure(party_members: Array[CrawlCombatant], enemy_groups: Array[EnemyGr
 	for group in groups:
 		actors.append_array(group.units)
 	skills = CrawlCombatContent.skills() if skill_definitions.is_empty() else skill_definitions
+	enemy_skills = CrawlCombatContent.skills()
 	rng.seed = seed_value
 	events.clear()
 	queue.clear()
@@ -219,7 +221,7 @@ func choose_action(actor: CrawlCombatant) -> Dictionary:
 			continue
 		return {"skill": inspection.skill, "target": inspection.target, "reserve": rule.reserve_mp, "rule": rule.id}
 	for fallback in ["attack", "defend"]:
-		var skill: CrawlCombatSkill = skills.get(fallback)
+		var skill: CrawlCombatSkill = (enemy_skills if actor.side == "enemy" else skills).get(fallback)
 		if _payable(actor, skill, 0):
 			var target := _select(eligible_targets(actor, skill), "lowest_hp", actor)
 			if target != null:
@@ -238,7 +240,7 @@ func inspect_rule(actor: CrawlCombatant, rule: CrawlTacticRule) -> Dictionary:
 	elif not _condition(actor, rule):
 		result.reason = "Condition is not currently met."
 	else:
-		var skill: CrawlCombatSkill = skills.get(rule.skill_id)
+		var skill: CrawlCombatSkill = (enemy_skills if actor.side == "enemy" else skills).get(rule.skill_id)
 		if skill == null or not skill.is_valid() or not actor.known_skills.has(rule.skill_id):
 			result.reason = "This skill is not available to this member."
 		elif skill.kind == "potion" and actor.potions <= 0:

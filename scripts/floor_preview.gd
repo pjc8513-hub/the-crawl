@@ -28,6 +28,13 @@ var switch_buttons: VBoxContainer
 var resource_header: Label
 var title: Label
 var current_view: String = "map"
+@export var persistence_enabled: bool = true
+@export var save_directory: String = "user://progression"
+var progression: CrawlProgressionController
+var hub_panel: CrawlHubPanel
+var navigation_button: Button
+var save_notice: Label
+var retry_save_button: Button
 
 
 func _ready() -> void:
@@ -49,11 +56,18 @@ func _ready() -> void:
 		option.max_count = enemy.max_group_count
 		option.formation = "Back" if enemy.subtype_class in ["Wizard", "Cleric"] else "Middle" if enemy.subtype_class == "Ninja" else "Front"
 		definition.standard_enemy_pool.append(option)
-	_generate()
+	if persistence_enabled:
+		get_tree().auto_accept_quit = false
+		progression = CrawlProgressionController.new()
+		progression.initialize(save_directory)
+		_show_hub()
+		if progression.notice != "": _save_error(progression.notice)
+	else:
+		_generate()
 
 
 func _process(delta: float) -> void:
-	if session == null or session.combat == null or session.result_pending or session.combat.outcome != "ongoing" or combat_panel.paused:
+	if session == null or flow.phase == "ended" or current_view == "hub" or session.combat == null or session.result_pending or session.combat.outcome != "ongoing" or combat_panel.paused:
 		return
 	combat_clock += delta * combat_panel.playback_speed
 	var steps := 0
@@ -64,6 +78,7 @@ func _process(delta: float) -> void:
 	if steps > 0:
 		combat_panel.render()
 		if session.result_pending:
+			_checkpoint()
 			_show_results()
 			_refresh()
 		_refresh_header()
@@ -100,15 +115,27 @@ func _build_ui() -> void:
 	seed_input.placeholder_text = "Integer seed"
 	seed_input.custom_minimum_size.x = 180
 	seed_row.add_child(seed_input)
-	var generate_button := Button.new()
-	generate_button.text = "New run"
-	generate_button.pressed.connect(_generate)
-	seed_row.add_child(generate_button)
+	navigation_button = Button.new()
+	navigation_button.text = "New run"
+	navigation_button.pressed.connect(_hub_or_abandon)
+	seed_row.add_child(navigation_button)
 	tactics_button = Button.new()
 	tactics_button.text = "Party tactics"
 	tactics_button.pressed.connect(_toggle_tactics)
 	seed_row.add_child(tactics_button)
-	seed_input.text_submitted.connect(func(_text: String) -> void: _generate())
+	seed_input.text_submitted.connect(func(_text: String) -> void:
+		if not persistence_enabled or current_view == "hub": _generate()
+	)
+	save_notice = Label.new()
+	save_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	save_notice.add_theme_color_override("font_color", Color("edb16d"))
+	column.add_child(save_notice)
+	save_notice.hide()
+	retry_save_button = CrawlGameTheme.button(column, "Retry save", func() -> void:
+		if flow != null and flow.phase == "ended": _show_end()
+		else: _checkpoint()
+	)
+	retry_save_button.hide()
 	legend = Label.new()
 	legend.text = "GREEN: party    YELLOW: available    RED: blocked    BLUE: explored    • visited marker"
 	legend.autowrap_mode = TextServer.AUTOWRAP_OFF
@@ -178,6 +205,14 @@ func _build_ui() -> void:
 	end_panel.add_child(end_body)
 	column.add_child(end_panel)
 	end_panel.hide()
+	hub_panel = CrawlHubPanel.new()
+	hub_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	hub_panel.run_requested.connect(_generate)
+	hub_panel.resume_requested.connect(_resume_run)
+	hub_panel.abandon_requested.connect(_hub_or_abandon)
+	hub_panel.purchase_requested.connect(_purchase)
+	column.add_child(hub_panel)
+	hub_panel.hide()
 	message = Label.new()
 	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	message.custom_minimum_size.y = 42
@@ -188,12 +223,21 @@ func _generate() -> void:
 	if not seed_input.text.is_valid_int():
 		message.text = "Enter an integer seed."
 		return
-	floor_state = generator.generate(definition, seed_input.text.to_int())
-	session = CrawlEncounterSession.new()
-	session.floor_state = floor_state
-	session.party = CrawlCombatContent.party()
-	flow = CrawlRoomFlow.new()
-	flow.session = session
+	if persistence_enabled:
+		var result := progression.start_run(definition, seed_input.text.to_int(), hub_panel.selections())
+		if not result.ok:
+			_save_error(result.reason)
+			return
+		flow = progression.active
+		session = flow.session
+		floor_state = session.floor_state
+	else:
+		floor_state = generator.generate(definition, seed_input.text.to_int())
+		session = CrawlEncounterSession.new()
+		session.floor_state = floor_state
+		session.party = CrawlCombatContent.party()
+		flow = CrawlRoomFlow.new()
+		flow.session = session
 	combat_clock = 0.0
 	tactics_panel.bind(session.party)
 	_show_view("map")
@@ -204,6 +248,7 @@ func _generate() -> void:
 
 
 func _move(coords: Vector2i) -> void:
+	if floor_state.movement_reason(coords) == "" and not _checkpoint(): return
 	var result := floor_state.move_to(coords)
 	if not result.ok:
 		message.text = result.reason
@@ -217,6 +262,7 @@ func _move(coords: Vector2i) -> void:
 			message.text = session.error_message
 	else:
 		message.text = "Travel complete. Cleared rooms do not repeat encounters."
+		_checkpoint()
 	map.selected_room = floor_state.current
 	_refresh()
 
@@ -226,6 +272,7 @@ func _acknowledge_results() -> void:
 	if not result.ok:
 		return
 	flow.after_combat(result)
+	if flow.phase != "ended": _checkpoint()
 	if flow.phase == "reward":
 		reward_panel.bind(flow)
 		_show_view("reward")
@@ -241,14 +288,17 @@ func _acknowledge_results() -> void:
 func _toggle_tactics() -> void:
 	if tactics_button.disabled:
 		return
+	if current_view == "tactics":
+		if not _checkpoint(true): return
 	_show_view("map" if current_view == "tactics" else "tactics")
 	if current_view == "tactics":
 		tactics_panel.bind(session.party)
-	message.text = "Edit rule thresholds, targets, reserves and priority order. Changes apply to this run."
+	message.text = "Rules save when you return to the dungeon. The first member of each class supplies that class's next-run preset." if persistence_enabled else "Edit rule thresholds, targets, reserves and priority order. Changes apply to this run."
 
 
 func _search() -> void:
 	message.text = flow.search().reason
+	_checkpoint()
 	_refresh()
 
 
@@ -281,6 +331,7 @@ func _refresh() -> void:
 	for lever in room.switches:
 		CrawlGameTheme.button(switch_buttons, "Use " + lever.name, func() -> void:
 			message.text = "Switch activated." if flow.activate_switch(lever.id) else "Switch cannot be used."
+			_checkpoint()
 			_refresh()
 		, "Already activated." if lever.is_triggered else reason)
 	_refresh_header()
@@ -288,6 +339,9 @@ func _refresh() -> void:
 
 
 func _refresh_header() -> void:
+	if persistence_enabled and current_view == "hub":
+		resource_header.text = "BANKED GOLD %d   ·   PARTY SLOTS %d/%d   ·   PERMANENT UNLOCKS" % [int(progression.profile.gold), int(progression.profile.party_slots), progression.economy.maximum_slots]
+		return
 	var standing := 0
 	for actor in session.party:
 		standing += 1 if actor.alive() else 0
@@ -296,13 +350,17 @@ func _refresh_header() -> void:
 
 func _show_view(view: String) -> void:
 	current_view = view
-	var panels := {"map": exploration_content, "combat": combat_panel, "tactics": tactics_panel, "results": results_panel, "reward": reward_panel, "camp": camp_panel, "end": end_panel}
+	var panels := {"hub": hub_panel, "map": exploration_content, "combat": combat_panel, "tactics": tactics_panel, "results": results_panel, "reward": reward_panel, "camp": camp_panel, "end": end_panel}
 	for name_key in panels:
 		panels[name_key].visible = view == name_key
 	legend.visible = view == "map"
-	title.text = "CRAWL  /  " + {"map": "THE CATACOMBS", "combat": "BATTLE", "tactics": "PARTY TACTICS", "results": "AFTERMATH", "reward": "SPOILS", "camp": "CAMP", "end": "RUN COMPLETE"}.get(view, "THE CATACOMBS")
+	title.text = "CRAWL  /  " + {"hub": "THE LODGE", "map": "THE CATACOMBS", "combat": "BATTLE", "tactics": "PARTY TACTICS", "results": "AFTERMATH", "reward": "SPOILS", "camp": "CAMP", "end": "RUN COMPLETE"}.get(view, "THE CATACOMBS")
 	tactics_button.text = "Back to dungeon" if view == "tactics" else "Party tactics"
 	tactics_button.disabled = view not in ["map", "tactics"] or flow.room_reason() != ""
+	if persistence_enabled:
+		navigation_button.text = "The lodge" if view == "hub" or view == "end" else "Bank & abandon"
+		navigation_button.disabled = view == "hub"
+		seed_input.editable = view == "hub"
 
 
 func _show_results() -> void:
@@ -317,6 +375,7 @@ func _open_chest() -> void:
 	if not flow.open_chest():
 		message.text = flow.chest_reason()
 		return
+	_checkpoint()
 	reward_panel.bind(flow)
 	_show_view("reward")
 	message.text = "Choose one item and its destination. Compare it with the equipped slot before claiming."
@@ -324,12 +383,16 @@ func _open_chest() -> void:
 
 
 func _claim_reward(offer_id: String, index: int, recipient: String, discard_id: String) -> void:
+	if not _checkpoint():
+		reward_panel.bind(flow)
+		return
 	var result := flow.claim(offer_id, index, recipient, discard_id)
 	message.text = result.reason
 	if result.ok:
 		if flow.phase == "ended":
 			_show_end()
 		else:
+			_checkpoint()
 			_show_view("map")
 	else:
 		if flow.phase == "reward":
@@ -341,6 +404,7 @@ func _open_camp() -> void:
 	if not flow.open_camp():
 		message.text = flow.room_reason()
 		return
+	_checkpoint()
 	camp_panel.bind(flow)
 	_show_view("camp")
 	message.text = "Camp supplies are limited for this run. Hover a disabled action to see why."
@@ -349,6 +413,7 @@ func _open_camp() -> void:
 
 func _close_camp() -> void:
 	if flow.close_camp():
+		_checkpoint()
 		_show_view("map")
 		message.text = "Camp packed. Your party remains in the same room."
 		_refresh()
@@ -356,6 +421,7 @@ func _close_camp() -> void:
 
 func _camp_action(actor_id: String, action: String) -> void:
 	var result := flow.camp_action(actor_id, action)
+	_checkpoint()
 	message.text = result.reason
 	camp_panel.bind(flow)
 	_refresh()
@@ -363,17 +429,125 @@ func _camp_action(actor_id: String, action: String) -> void:
 
 func _equip_item(item_id: String, recipient: String) -> void:
 	message.text = "Equipment updated. Replaced gear remains in your pack." if flow.equip(item_id, recipient) else "Equipment can only be changed at camp."
+	_checkpoint()
 	camp_panel.bind(flow)
 	_refresh()
 
 
 func _show_end() -> void:
+	var bank_message := ""
+	if persistence_enabled:
+		if progression.active == flow:
+			if _checkpoint(true):
+				var settled := progression.settle(flow.end_outcome)
+				if not settled.ok or settled.get("reason", "") != "": _save_error(settled.reason)
+		if progression.profile.settled.has(flow.run_id):
+			bank_message = "\nGold banked once. Lodge balance: %d." % int(progression.profile.gold)
+		else:
+			bank_message = "\nBanking is pending. Retry before starting another run."
 	for child in end_body.get_children():
 		end_body.remove_child(child)
 		child.queue_free()
 	CrawlGameTheme.label(end_body, "FLOOR CLEARED" if flow.end_outcome == "victory" else "YOUR EXPEDITION ENDS", true)
-	CrawlGameTheme.label(CrawlGameTheme.card(end_body), "Gold earned: %d\nFinal gear: %s\n\nThis run's gear and supplies have been cleared." % [session.run_gold, ", ".join(flow.final_loadout) if not flow.final_loadout.is_empty() else "None"])
-	CrawlGameTheme.button(end_body, "Begin a new run", _generate)
+	CrawlGameTheme.label(CrawlGameTheme.card(end_body), "Gold earned: %d\nFinal gear: %s\n\nThis run's gear and supplies have been cleared.%s" % [session.run_gold, ", ".join(flow.final_loadout) if not flow.final_loadout.is_empty() else "None", bank_message])
+	CrawlGameTheme.button(end_body, "Return to the lodge" if persistence_enabled else "Begin a new run", _hub_or_abandon)
 	_show_view("end")
 	message.text = "The expedition is complete." if flow.end_outcome == "victory" else "Regroup and try another route or tactic."
 	_refresh()
+
+
+func _save_error(reason: String) -> void:
+	save_notice.size.x = maxf(200, get_viewport_rect().size.x - 48)
+	save_notice.text = reason
+	save_notice.show()
+	retry_save_button.visible = persistence_enabled and progression != null and progression.active != null and not progression.blocked
+
+
+func _checkpoint(presets: bool = false) -> bool:
+	if not persistence_enabled: return true
+	if progression.active != flow or flow == null: return true
+	if presets:
+		var saved_presets := progression.save_presets()
+		if not saved_presets.ok:
+			_save_error(saved_presets.reason)
+			return false
+	var result := progression.checkpoint()
+	if not result.ok:
+		_save_error(result.reason)
+		return false
+	save_notice.hide()
+	retry_save_button.hide()
+	return true
+
+
+func _show_hub() -> void:
+	hub_panel.bind(progression)
+	_show_view("hub")
+	_refresh_header()
+	message.text = "Prepare a party and spend banked gold. Resume an existing checkpoint or begin a fresh expedition."
+
+
+func _purchase(kind: String, id: String) -> void:
+	var result := progression.purchase(kind, id)
+	message.text = result.reason
+	if not result.ok and result.reason == progression.notice: _save_error(result.reason)
+	if result.ok:
+		save_notice.hide()
+		retry_save_button.hide()
+	hub_panel.bind(progression)
+	_refresh_header()
+
+
+func _resume_run() -> void:
+	if progression.blocked or progression.active == null: return
+	flow = progression.active
+	session = flow.session
+	floor_state = session.floor_state
+	definition = progression.active_definition
+	map.floor_state = floor_state
+	map.selected_room = floor_state.current
+	tactics_panel.bind(session.party)
+	combat_clock = 0.0
+	if session.result_pending:
+		combat_panel.bind(session.combat)
+		_show_results()
+	elif flow.phase == "reward":
+		reward_panel.bind(flow)
+		_show_view("reward")
+	elif flow.phase == "camp":
+		camp_panel.bind(flow)
+		_show_view("camp")
+	elif flow.phase == "ended":
+		_show_end()
+	else:
+		_show_view("map")
+		message.text = "Checkpoint restored. Your party, resources and room history are preserved."
+	_refresh()
+
+
+func _hub_or_abandon() -> void:
+	if not persistence_enabled:
+		_generate()
+		return
+	if progression.active != null:
+		if progression.active.phase == "ended":
+			if flow != progression.active:
+				_resume_run()
+			else:
+				_show_end()
+			if progression.active != null: return
+		else:
+			var result := progression.settle("abandon")
+			if not result.ok:
+				_save_error(result.reason)
+				return
+			if result.get("reason", "") != "": _save_error(result.reason)
+	_show_hub()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and persistence_enabled and progression != null:
+		if progression.active != null and (session == null or session.combat == null or session.combat.outcome != "ongoing"):
+			_checkpoint(true)
+		# An encounter in progress intentionally retains its pre-entry checkpoint.
+		get_tree().quit()

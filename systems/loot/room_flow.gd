@@ -15,6 +15,7 @@ var claimed_offers: Dictionary = {}
 var offers: Dictionary = {}
 var end_outcome: String = ""
 var final_loadout: Array[String] = []
+var run_id: String = ""
 
 
 static func item_pool() -> Array[CrawlItemDefinition]:
@@ -274,3 +275,7 @@ func _end_run(outcome: String) -> void:
 		_unequip(entry)
 	inventory.clear()
 	supplies = 0
+	for actor in session.party:
+		actor.potions = 0
+		actor.statuses.clear()
+		actor.defending = false
