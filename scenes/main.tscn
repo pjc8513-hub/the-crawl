@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://b65ap4keyrag5"]
+
+[ext_resource type="Script" path="res://scripts/floor_preview.gd" id="1_preview"]
+
+[node name="Main" type="Node2D" unique_id=481695262]
+script = ExtResource("1_preview")
+
+[node name="Systems" type="Node" parent="." unique_id=855512746]
+
+[node name="World" type="Node" parent="." unique_id=948492645]
+
+[node name="ExplorationContainer" type="SubViewportContainer" parent="World" unique_id=2103202892]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ExplorationViewport" type="SubViewport" parent="World/ExplorationContainer" unique_id=555098264]
+
+[node name="ExplorationWorld" type="Node2D" parent="World/ExplorationContainer/ExplorationViewport" unique_id=223999005]
+
+[node name="LevelRoot" type="Node2D" parent="World/ExplorationContainer/ExplorationViewport/ExplorationWorld" unique_id=1287005460]
+
+[node name="EntityRoot" type="Node2D" parent="World/ExplorationContainer/ExplorationViewport/ExplorationWorld" unique_id=855592101]
+
+[node name="EffectRoot" type="Node2D" parent="World/ExplorationContainer/ExplorationViewport/ExplorationWorld" unique_id=636951055]
+
+[node name="CombatContainer" type="SubViewportContainer" parent="World" unique_id=2104824031]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CombatViewport" type="SubViewport" parent="World/CombatContainer" unique_id=455723868]
+
+[node name="CombatRoot" type="Node2D" parent="World/CombatContainer/CombatViewport" unique_id=494878152]
+
+[node name="HudLayer" type="Node" parent="." unique_id=580586381]
+
+[node name="HudRoot" type="Node" parent="HudLayer" unique_id=110489508]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="HudLayer/HudRoot" unique_id=1674436731]
+
+[node name="ScreenFilter" type="ColorRect" parent="HudLayer/HudRoot/CanvasLayer" unique_id=1347057808]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="EventLog" type="Control" parent="HudLayer" unique_id=1598427413]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PauseLayer" type="Node" parent="." unique_id=1832314238]
+
+[node name="TransitionLayer" type="Node" parent="." unique_id=2068632608]
+
+[node name="DebugLayer" type="Node" parent="." unique_id=199742546]

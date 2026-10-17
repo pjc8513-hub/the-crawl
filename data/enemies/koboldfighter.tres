@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://bku8snjxoe0kd"]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_ub5wa"]
+
+[resource]
+script = ExtResource("1_ub5wa")
+id = "M-03"
+display_name = "Kobold Fighter"
+species = "Kobold"
+subtype_class = "Fighter"
+threat_tier = "1"
+hit_dice_formula = "2d6 + 2"
+min_hp = 4
+max_hp = 14
+avg_hp = 9.0
+base_strength = 2
+base_endurance = 2
+base_wisdom = 0
+base_dexterity = 2
+base_willpower = 1
+accuracy_bonus = 1
+initiative_bonus = 1
+bonus_damage_base = 1
+spawn_dice_formula = "3d5"
+min_group_count = 3
+max_group_count = 15
+metadata/_custom_type_script = "uid://c0dneonxyvv6l"

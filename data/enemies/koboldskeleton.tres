@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://bcmhd514ocvmb"]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_6rnad"]
+
+[resource]
+script = ExtResource("1_6rnad")
+id = "M-05"
+display_name = "Kobold Skeleton"
+species = "Kobold"
+subtype_class = "Skeleton"
+threat_tier = "1"
+hit_dice_formula = "2d6"
+min_hp = 2
+max_hp = 12
+avg_hp = 7.0
+base_strength = 2
+base_endurance = 1
+base_wisdom = 1
+base_dexterity = 1
+spawn_dice_formula = "3d6 + 2"
+min_group_count = 5
+max_group_count = 20
+resist_earth = true
+metadata/_custom_type_script = "uid://c0dneonxyvv6l"

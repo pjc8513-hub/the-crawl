@@ -1,0 +1,8 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Generated floor preview verification artifacts
+/tests/preview_*.png*
+/tests/preview.log
+/tests/ui_flow.log

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://dj3xnvwfyhicp"]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_3km1n"]
+
+[resource]
+script = ExtResource("1_3km1n")
+id = "M-12"
+display_name = "Goblin Zombie"
+species = "Goblin"
+subtype_class = "Zombie"
+threat_tier = "1"
+hit_dice_formula = "3d8 + 6"
+min_hp = 9
+max_hp = 30
+avg_hp = 19.5
+base_strength = 1
+base_endurance = 1
+base_wisdom = 0
+base_dexterity = 0
+spawn_dice_formula = "2d4 + 2"
+min_group_count = 4
+max_group_count = 10
+resist_earth = true
+metadata/_custom_type_script = "uid://c0dneonxyvv6l"
