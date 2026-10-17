@@ -78,7 +78,10 @@ func bind(controller: CrawlProgressionController) -> void:
 		var owner: String = controller.economy.skill_unlocks[skill_id]["class"]
 		_row("Unlock %s · %s" % [skills[skill_id].display_name, owner.capitalize()], "skill", skill_id)
 	for skill_id in controller.economy.rank_costs:
-		_row("%s · rank %d / %d · +%d power per rank" % [skills[skill_id].display_name, int(profile.ranks.get(skill_id, 0)), controller.economy.maximum_skill_rank, controller.economy.power_per_rank[skill_id]], "rank", skill_id)
+		var rank_effect: String = "+10% effect chance per rank" if skill_id in ["sleep", "freezing_wind", "charming_potion", "earthquake"] else "+%d power per rank" % controller.economy.power_per_rank[skill_id]
+		if skill_id in ["freezing_wind", "earthquake"]:
+			rank_effect += ", +%d power" % controller.economy.power_per_rank[skill_id]
+		_row("%s · rank %d / %d · %s" % [skills[skill_id].display_name, int(profile.ranks.get(skill_id, 0)), controller.economy.maximum_skill_rank, rank_effect], "rank", skill_id)
 
 
 func _row(label_text: String, kind: String, id: String) -> void:

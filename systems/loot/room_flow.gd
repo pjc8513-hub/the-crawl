@@ -26,7 +26,9 @@ static func item_pool() -> Array[CrawlItemDefinition]:
 		["ward_mail", "Ward Mail", "armor", "Reinforced links for a sturdier defender.", {"armor": 2, "max_hp": 12}],
 		["bloodstone", "Bloodstone Charm", "charm", "A deep reserve of vitality.", {"max_hp": 20}],
 		["focus", "Focus Charm", "charm", "A talisman for longer spell rotations.", {"max_mp": 10, "magic": 2}],
-		["swift_blade", "Swift Blade", "weapon", "Strike harder and earlier in the round.", {"attack": 3, "initiative": 2}]
+		["swift_blade", "Swift Blade", "weapon", "Strike harder and earlier in the round.", {"attack": 3, "initiative": 2}],
+		["winter_staff", "Winter Staff", "weapon", "Improves control spells and keeps enemies frozen.", {"magic": 2, "status_chance_bonus": 15, "freeze_thaw_penalty": 20}],
+		["glacial_charm", "Glacial Charm", "charm", "Can hold frozen enemies indefinitely when paired with Winter Staff.", {"freeze_thaw_penalty": 30}]
 	]:
 		var item := CrawlItemDefinition.new()
 		item.id = spec[0]

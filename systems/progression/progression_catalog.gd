@@ -29,6 +29,8 @@ static func skills(profile: Dictionary) -> Dictionary:
 	var definition := CrawlProgressionDefinition.new()
 	for skill_id in profile.ranks:
 		result[skill_id].power += int(profile.ranks[skill_id]) * int(definition.power_per_rank[skill_id])
+		if skill_id in ["sleep", "freezing_wind", "charming_potion", "earthquake"]:
+			result[skill_id].status_chance = mini(100, result[skill_id].status_chance + 10 * int(profile.ranks[skill_id]))
 	return result
 
 
@@ -59,7 +61,8 @@ static func party(profile: Dictionary, classes: Array) -> Array[CrawlCombatant]:
 		for skill_id in profile.skills:
 			if unlocks[skill_id]["class"] == class_id:
 				actor.known_skills.append(skill_id)
-				var rule := CrawlCombatContent.rule("unlocked:" + skill_id, "enemy_group_count", 3 if skill_id == "cleave" else 1, skill_id, "highest_count" if skill_id == "cleave" else "lowest_hp")
+				var grouped: bool = skill_id in ["cleave", "freezing_wind", "charming_potion", "earthquake", "chain_lightning"]
+				var rule := CrawlCombatContent.rule("unlocked:" + skill_id, "enemy_group_count", 3 if grouped else 1, skill_id, "highest_count" if grouped else "lowest_hp")
 				actor.tactics.insert(maxi(0, actor.tactics.size() - 1), rule)
 		if profile.presets.has(class_id):
 			actor.tactics.clear()

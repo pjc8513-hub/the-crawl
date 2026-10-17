@@ -97,7 +97,7 @@ func _refresh() -> void:
 	var recipient_id: String = recipient.get_selected_metadata()
 	var discard_id: String = discard.get_selected_metadata()
 	var actor := flow.actor_by_id(recipient_id)
-	var labels := {"attack": "Attack", "magic": "Magic", "armor": "Armor", "max_hp": "Max HP", "max_mp": "Max MP", "initiative": "Initiative"}
+	var labels := {"attack": "Attack", "magic": "Magic", "armor": "Armor", "max_hp": "Max HP", "max_mp": "Max MP", "initiative": "Initiative", "status_chance_bonus": "Status chance", "freeze_thaw_penalty": "Freeze hold"}
 	for index in range(buttons.size()):
 		var item: CrawlItemDefinition = flow.pending_offer.items[index]
 		var text := "Store in the backpack. Equip or transfer gear at camp."

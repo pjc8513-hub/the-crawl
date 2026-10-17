@@ -77,7 +77,7 @@ func reward_gold() -> int:
 	var gold := 0
 	for group in groups:
 		for unit in group.units:
-			if not unit.alive() and unit.enemy_data != null:
+			if unit.hp <= 0 and not unit.fled and unit.enemy_data != null:
 				gold += maxi(0, unit.enemy_data.gold)
 	return gold
 
@@ -102,11 +102,16 @@ func step() -> void:
 	var stunned := false
 	for status_id in actor.statuses.keys():
 		var status: Dictionary = actor.statuses[status_id]
-		if status_id == "poison":
-			_damage(actor, maxi(0, int(status.potency)), "status:poison", "poison")
-		elif status_id == "stun":
+		if status_id in ["poison", "burn"]:
+			_damage(actor, maxi(0, int(status.potency)), "status:poison", status_id)
+		elif status_id in ["stun", "sleep", "frozen"]:
 			stunned = true
-		status.turns -= 1
+		if status_id == "frozen" and rng.randf() < float(maxi(0, 50 - int(status.potency))) / 100.0:
+			actor.statuses.erase(status_id)
+			_emit("status_expired", {"target": actor.id, "status": status_id})
+			continue
+		if status_id not in ["sleep", "frozen"]:
+			status.turns -= 1
 		if status.turns <= 0:
 			actor.statuses.erase(status_id)
 			_emit("status_expired", {"target": actor.id, "status": status_id})
@@ -136,7 +141,7 @@ func eligible_targets(actor: CrawlCombatant, skill: CrawlCombatSkill) -> Array[C
 		if healing:
 			if target.hp < target.max_hp:
 				result.append(target)
-		elif skill.reach == "ranged" or ROWS[target.row] == nearest:
+		elif (skill.reach == "ranged" or ROWS[target.row] == nearest) and not (skill.id == "sleep" and target.statuses.has("sleep")):
 			result.append(target)
 	return result
 
@@ -276,7 +281,7 @@ func perform(actor: CrawlCombatant, skill: CrawlCombatSkill, target: CrawlCombat
 		_emit("heal", {"actor": actor.id, "target": target.id, "amount": healed, "hp": target.hp})
 	else:
 		var targets: Array[CrawlCombatant] = [target]
-		if skill.kind in ["group_damage", "cleave"]:
+		if skill.kind in ["group_damage", "group_status", "group_flee", "cleave"]:
 			targets.clear()
 			targets.append(target)
 			for unit in actors:
@@ -284,13 +289,18 @@ func perform(actor: CrawlCombatant, skill: CrawlCombatSkill, target: CrawlCombat
 					targets.append(unit)
 		var cleave_remaining := _power(actor, skill) if skill.kind == "cleave" else 0
 		for unit in targets:
+			if skill.kind == "group_flee":
+				if unit.enemy_data != null and unit.enemy_data.can_flee and not _resists(unit, skill.element) and rng.randi_range(1, 100) <= mini(100, int(unit.enemy_data.flee_chance * 100.0) + skill.status_chance + actor.status_chance_bonus):
+					unit.fled = true
+					_emit("flee", {"actor": actor.id, "target": unit.id})
+				continue
 			var raw := cleave_remaining if skill.kind == "cleave" else _power(actor, skill)
 			var damage := _mitigated(unit, skill, raw)
-			var dealt := _damage(unit, damage, actor.id, skill.id)
+			var dealt := _damage(unit, damage, actor.id, skill.id) if skill.kind != "group_status" else 0
 			if skill.kind == "cleave":
 				cleave_remaining = maxi(0, damage - dealt)
-			if unit.alive() and skill.status_id != "" and skill.status_turns > 0:
-				unit.statuses[skill.status_id] = {"turns": skill.status_turns, "potency": skill.status_potency}
+			if unit.alive() and skill.status_id != "" and skill.status_turns > 0 and not (skill.status_id == "sleep" and unit.statuses.has("sleep")) and not _resists(unit, skill.element) and rng.randi_range(1, 100) <= mini(100, skill.status_chance + actor.status_chance_bonus):
+				unit.statuses[skill.status_id] = {"turns": skill.status_turns, "potency": actor.freeze_thaw_penalty if skill.status_id == "frozen" else skill.status_potency}
 				_emit("status", {"actor": actor.id, "target": unit.id, "status": skill.status_id, "turns": skill.status_turns})
 			if skill.kind == "cleave" and (unit.alive() or cleave_remaining <= 0):
 				break
@@ -306,14 +316,22 @@ func _mitigated(target: CrawlCombatant, skill: CrawlCombatSkill, raw: int) -> in
 	var value := maxi(0, raw - (target.armor if skill.element == "physical" else 0))
 	if target.defending:
 		value = floori(value / 2.0)
-	if target.enemy_data != null:
-		var resisted: bool = target.enemy_data.resist_physical if skill.element == "physical" else target.enemy_data.resist_fire if skill.element == "fire" else target.enemy_data.resist_spirit
-		if resisted:
-			value = floori(value / 2.0)
+	if _resists(target, skill.element):
+		value = floori(value / 2.0)
 	return value
 
 
+func _resists(target: CrawlCombatant, element: String) -> bool:
+	return target.enemy_data != null and bool(target.enemy_data.get("resist_" + element))
+
+
 func _damage(target: CrawlCombatant, amount: int, source: String, skill_id: String) -> int:
+	if target.statuses.has("sleep") and amount > 0:
+		amount = floori(amount * 1.5)
+		target.statuses.erase("sleep")
+		_emit("status_expired", {"target": target.id, "status": "sleep"})
+	if target.statuses.has("burn") and amount > 0 and skill_id != "burn":
+		amount = floori(amount * 1.2)
 	var dealt := mini(target.hp, maxi(0, amount))
 	target.hp -= dealt
 	_emit("damage", {"actor": source, "target": target.id, "skill": skill_id, "amount": dealt, "hp": target.hp})

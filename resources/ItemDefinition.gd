@@ -11,14 +11,16 @@ extends Resource
 @export var max_hp: int = 0
 @export var max_mp: int = 0
 @export var initiative: int = 0
+@export var status_chance_bonus: int = 0
+@export var freeze_thaw_penalty: int = 0
 
 
 func bonuses() -> Dictionary:
-	return {"attack": attack, "magic": magic, "armor": armor, "max_hp": max_hp, "max_mp": max_mp, "initiative": initiative}
+	return {"attack": attack, "magic": magic, "armor": armor, "max_hp": max_hp, "max_mp": max_mp, "initiative": initiative, "status_chance_bonus": status_chance_bonus, "freeze_thaw_penalty": freeze_thaw_penalty}
 
 
 func summary() -> String:
-	var labels := {"attack": "Attack", "magic": "Magic", "armor": "Armor", "max_hp": "Max HP", "max_mp": "Max MP", "initiative": "Initiative"}
+	var labels := {"attack": "Attack", "magic": "Magic", "armor": "Armor", "max_hp": "Max HP", "max_mp": "Max MP", "initiative": "Initiative", "status_chance_bonus": "Status chance", "freeze_thaw_penalty": "Freeze hold"}
 	var lines: Array[String] = []
 	for stat in bonuses():
 		var value: int = bonuses()[stat]

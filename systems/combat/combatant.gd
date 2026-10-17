@@ -20,12 +20,15 @@ var known_skills: Array[String] = ["attack", "potion", "defend"]
 var tactics: Array[CrawlTacticRule] = []
 var statuses: Dictionary = {} # ID -> {turns, potency}; tick at start of owner's turn.
 var defending: bool = false
+var fled: bool = false
+var status_chance_bonus: int = 0
+var freeze_thaw_penalty: int = 0
 var enemy_data: EnemyResource
 var equipment: Dictionary = {} # Slot -> immutable ItemDefinition; inventory owns instances.
 
 
 func alive() -> bool:
-	return hp > 0
+	return hp > 0 and not fled
 
 
 func hp_percent() -> float:
