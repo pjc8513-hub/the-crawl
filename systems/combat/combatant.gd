@@ -23,6 +23,10 @@ var defending: bool = false
 var fled: bool = false
 var status_chance_bonus: int = 0
 var freeze_thaw_penalty: int = 0
+var meditation_percent: int = 0
+var focus_percent: int = 0
+var battle_armor: int = 0
+var bloodlust_bonus: int = 0
 var enemy_data: EnemyResource
 var equipment: Dictionary = {} # Slot -> immutable ItemDefinition; inventory owns instances.
 

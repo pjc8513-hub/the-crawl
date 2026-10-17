@@ -187,6 +187,8 @@ func _format_event(event: Dictionary) -> String:
 		"damage": return "  %s takes %d damage (%d HP)." % [target, event.amount, event.hp]
 		"heal": return "  %s recovers %d HP." % [target, event.amount]
 		"defeat": return "  %s falls." % target
+		"block": return "  %s blocks a hit on %s." % [source, target]
+		"passive": return "  %s: %s bonus %d." % [source, event.skill.replace("_", " ").capitalize(), event.amount]
 		"flee": return "  %s flees." % target
 		"status": return "  %s: %s for %d turns." % [target, event.status, event.turns]
 		"skip": return "%s skips a turn: %s." % [source, event.reason]

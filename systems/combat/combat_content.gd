@@ -33,6 +33,16 @@ static func skills() -> Dictionary:
 		,["earthquake", "Earthquake", "group_damage", "ranged", "earth", 9, 10]
 		,["combust", "Combust", "attack", "ranged", "fire", 24, 12]
 		,["chain_lightning", "Chain Lightning", "group_damage", "ranged", "air", 18, 18]
+		,["magic_missile", "Magic Missile", "attack", "ranged", "water", 3, 0]
+		,["meditation", "Meditation", "passive", "ranged", "spirit", 20, 0]
+		,["mind_expansion", "Mind Expansion", "passive", "ranged", "spirit", 20, 0]
+		,["focus", "Focus", "passive", "ranged", "spirit", 20, 0]
+		,["intimidate", "Intimidate", "passive", "ranged", "spirit", 35, 0]
+		,["battle_harden", "Battle Harden", "passive", "melee", "physical", 1, 0]
+		,["blood_lust", "Blood Lust", "passive", "melee", "physical", 12, 0]
+		,["giant_slayer", "Giant Slayer", "passive", "melee", "physical", 50, 0]
+		,["berserk", "Berserk", "passive", "melee", "physical", 10, 0]
+		,["aegis", "Aegis", "passive", "ranged", "spirit", 20, 0]
 	]:
 		var skill := CrawlCombatSkill.new()
 		skill.id = spec[0]

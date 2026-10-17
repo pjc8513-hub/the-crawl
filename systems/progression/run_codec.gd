@@ -28,6 +28,10 @@ static func pack_actor(actor: CrawlCombatant) -> Dictionary:
 	result["fled"] = actor.fled
 	result["status_chance_bonus"] = actor.status_chance_bonus
 	result["freeze_thaw_penalty"] = actor.freeze_thaw_penalty
+	result["meditation_percent"] = actor.meditation_percent
+	result["focus_percent"] = actor.focus_percent
+	result["battle_armor"] = actor.battle_armor
+	result["bloodlust_bonus"] = actor.bloodlust_bonus
 	result["statuses"] = actor.statuses.duplicate(true)
 	result["known_skills"] = actor.known_skills.duplicate()
 	result["tactics"] = []
@@ -44,6 +48,8 @@ static func _actor_error(data: Variant) -> String:
 		if not data.get(field) is String or data[field].length() > 150: return "Invalid actor identity."
 	if data.id == "" or data.group_id == "" or data.side not in ["party", "enemy"] or data.row not in ["Front", "Middle", "Back"] or data.max_hp < 1 or data.hp > data.max_hp or data.mp > data.max_mp or not data.get("defending") is bool: return "Invalid actor resources or formation."
 	if not data.get("fled", false) is bool or not CrawlProgressionCatalog.integer(data.get("status_chance_bonus", 0), 0, 1000) or not CrawlProgressionCatalog.integer(data.get("freeze_thaw_penalty", 0), 0, 1000): return "Invalid actor effect bonuses."
+	if not CrawlProgressionCatalog.integer(data.get("meditation_percent", 0), 0, 100) or not CrawlProgressionCatalog.integer(data.get("focus_percent", 0), 0, 100): return "Invalid passive bonuses."
+	if not CrawlProgressionCatalog.integer(data.get("battle_armor", 0), 0, 1000) or not CrawlProgressionCatalog.integer(data.get("bloodlust_bonus", 0), 0, 1000): return "Invalid combat bonuses."
 	if not data.get("known_skills") is Array or data.known_skills.size() > 16: return "Invalid learned skills."
 	for id in data.known_skills:
 		if not id is String or not CrawlCombatContent.skills().has(id): return "Unknown learned skill."
@@ -52,6 +58,7 @@ static func _actor_error(data: Variant) -> String:
 	for id in data.statuses:
 		var status: Variant = data.statuses[id]
 		if not id is String or id.length() > 64 or not status is Dictionary or not CrawlProgressionCatalog.integer(status.get("turns"), 1, 100) or not CrawlProgressionCatalog.integer(status.get("potency"), 0, 100000): return "Invalid status duration or potency."
+		if status.has("source") and (not status.source is String or status.source.length() > 150): return "Invalid status source."
 	return ""
 
 
@@ -65,6 +72,10 @@ static func unpack_actor(data: Dictionary) -> CrawlCombatant:
 	actor.fled = data.get("fled", false)
 	actor.status_chance_bonus = int(data.get("status_chance_bonus", 0))
 	actor.freeze_thaw_penalty = int(data.get("freeze_thaw_penalty", 0))
+	actor.meditation_percent = int(data.get("meditation_percent", 0))
+	actor.focus_percent = int(data.get("focus_percent", 0))
+	actor.battle_armor = int(data.get("battle_armor", 0))
+	actor.bloodlust_bonus = int(data.get("bloodlust_bonus", 0))
 	actor.statuses = data.statuses.duplicate(true)
 	for id in data.known_skills: actor.known_skills.append(id)
 	for rule in data.tactics: actor.tactics.append(CrawlProgressionCatalog.unpack_rule(rule))
@@ -296,17 +307,17 @@ static func _restore_combat(data: Variant, session: CrawlEncounterSession, enemi
 			group.units.append(unit)
 		groups.append(group)
 	var engine := CrawlCombatEngine.new()
-	engine.configure(session.party, groups, 0, session.skill_definitions)
+	engine.configure(session.party, groups, 0, session.skill_definitions, false)
 	if data.outcome not in ["stalemate", "invalid"] and engine.outcome != data.outcome: return "Combat outcome disagrees with living units."
 	if data.outcome == "stalemate" and engine.outcome != "ongoing": return "Invalid stalemate state."
 	engine.outcome = data.outcome
 	engine.round_index = int(data.round)
 	engine.events.clear()
 	for event in data.events:
-		if not event is Dictionary or event.get("type") not in ["round", "action", "damage", "heal", "defeat", "flee", "status", "skip", "status_expired", "complete"] or not CrawlProgressionCatalog.integer(event.get("id"), 0, 1000000) or not CrawlProgressionCatalog.integer(event.get("round"), 0, 100): return "Invalid saved combat event."
+		if not event is Dictionary or event.get("type") not in ["round", "action", "damage", "heal", "defeat", "flee", "status", "skip", "status_expired", "passive", "block", "complete"] or not CrawlProgressionCatalog.integer(event.get("id"), 0, 1000000) or not CrawlProgressionCatalog.integer(event.get("round"), 0, 100): return "Invalid saved combat event."
 		var type: String = event.type
-		if type in ["action", "damage", "heal", "defeat", "flee", "status", "skip"] and (not event.get("actor") is String or (not ids.has(event.actor) and event.actor != "status:poison")): return "Unknown event source."
-		if type in ["action", "damage", "heal", "defeat", "flee", "status", "status_expired"] and not ids.has(event.get("target")): return "Unknown event target."
+		if type in ["action", "damage", "heal", "defeat", "flee", "status", "skip", "passive", "block"] and (not event.get("actor") is String or (not ids.has(event.actor) and event.actor != "status:poison")): return "Unknown event source."
+		if type in ["action", "damage", "heal", "defeat", "flee", "status", "status_expired", "block"] and not ids.has(event.get("target")): return "Unknown event target."
 		if type == "action" and not engine.skills.has(event.get("skill")): return "Unknown event skill."
 		if type in ["damage", "heal"] and (not CrawlProgressionCatalog.integer(event.get("amount"), 0, 100000) or not CrawlProgressionCatalog.integer(event.get("hp"), 0, 100000)): return "Invalid event amount."
 		if type in ["status", "status_expired"] and not event.get("status") is String: return "Invalid status event."

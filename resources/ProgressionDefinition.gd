@@ -15,6 +15,16 @@ extends Resource
 	,"earthquake": {"class": "mage", "cost": 160}
 	,"combust": {"class": "mage", "cost": 200}
 	,"chain_lightning": {"class": "mage", "cost": 240}
+	,"magic_missile": {"class": "mage", "cost": 80}
+	,"meditation": {"class": "mage", "cost": 180}
+	,"mind_expansion": {"class": "mage", "cost": 180}
+	,"focus": {"class": "mage", "cost": 200}
+	,"intimidate": {"class": "warrior", "cost": 120}
+	,"battle_harden": {"class": "warrior", "cost": 120}
+	,"blood_lust": {"class": "warrior", "cost": 160}
+	,"giant_slayer": {"class": "warrior", "cost": 180}
+	,"berserk": {"class": "warrior", "cost": 180}
+	,"aegis": {"class": "warrior", "cost": 220}
 }
 @export var rank_costs: Dictionary = {"attack": 60, "heal": 80, "fireball": 100, "cleave": 100, "poison_strike": 80, "stun_strike": 100, "sleep": 100, "freezing_wind": 120, "charming_potion": 140, "earthquake": 160, "combust": 200, "chain_lightning": 240}
 @export var maximum_skill_rank: int = 3

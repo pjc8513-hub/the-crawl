@@ -57,7 +57,11 @@ func _build_rule(actor: CrawlCombatant, index: int) -> void:
 	enabled.button_pressed = rule.enabled
 	enabled.text = "%d." % [index + 1]
 	row.add_child(enabled)
-	var action := _options(row, actor.known_skills, rule.skill_id)
+	var active_skills: Array[String] = []
+	for skill_id in actor.known_skills:
+		if CrawlCombatContent.skills()[skill_id].kind != "passive":
+			active_skills.append(skill_id)
+	var action := _options(row, active_skills, rule.skill_id)
 	action.custom_minimum_size.x = 180
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL

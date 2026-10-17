@@ -61,6 +61,15 @@ static func party(profile: Dictionary, classes: Array) -> Array[CrawlCombatant]:
 		for skill_id in profile.skills:
 			if unlocks[skill_id]["class"] == class_id:
 				actor.known_skills.append(skill_id)
+				if skill_id == "mind_expansion":
+					actor.max_mp += CrawlCombatContent.skills()[skill_id].power
+					actor.mp = actor.max_mp
+				elif skill_id == "meditation":
+					actor.meditation_percent = CrawlCombatContent.skills()[skill_id].power
+				elif skill_id == "focus":
+					actor.focus_percent = CrawlCombatContent.skills()[skill_id].power
+				if CrawlCombatContent.skills()[skill_id].kind == "passive":
+					continue
 				var grouped: bool = skill_id in ["cleave", "freezing_wind", "charming_potion", "earthquake", "chain_lightning"]
 				var rule := CrawlCombatContent.rule("unlocked:" + skill_id, "enemy_group_count", 3 if grouped else 1, skill_id, "highest_count" if grouped else "lowest_hp")
 				actor.tactics.insert(maxi(0, actor.tactics.size() - 1), rule)

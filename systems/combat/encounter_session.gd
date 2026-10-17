@@ -43,6 +43,8 @@ func begin() -> bool:
 	for actor in party:
 		actor.statuses.clear() # Initial statuses are encounter-scoped.
 		actor.defending = false
+		actor.battle_armor = 0
+		actor.bloodlust_bonus = 0
 	combat = CrawlCombatEngine.new()
 	combat.configure(party, enemy_groups, seed_value, skill_definitions)
 	floor_state.travel_block_reason = "Combat is in progress."
@@ -67,6 +69,9 @@ func acknowledge() -> Dictionary:
 	if not result_pending:
 		return {"ok": false, "gold": 0}
 	result_pending = false
+	for actor in party:
+		if actor.alive() and actor.meditation_percent > 0:
+			actor.mp = mini(actor.max_mp, actor.mp + ceili(actor.max_mp * actor.meditation_percent / 100.0))
 	var gold := 0
 	if combat.outcome == "victory":
 		var reward_id := encounter_id()
