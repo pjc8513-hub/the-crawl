@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CrawlCombatSkill" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/CombatSkill.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+display_name = "Stunning strike"
+element = "physical"
+id = "stun_strike"
+kind = "attack"
+mp_cost = 3
+power = 0
+reach = "melee"
+status_chance = 100
+status_id = "stun"
+status_potency = 0
+status_turns = 1
+variance = 0

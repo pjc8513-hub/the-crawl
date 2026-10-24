@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CrawlUpgradeDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://resources/UpgradeDefinition.gd" id="script"]
+[ext_resource type="Resource" path="res://data/classes/warrior.tres" id="class"]
+[ext_resource type="Resource" path="res://data/skills/cleave.tres" id="skill"]
+[ext_resource type="Script" path="res://resources/TacticRule.gd" id="tactic_type"]
+
+[sub_resource type="Resource" id="default_tactic"]
+script = ExtResource("tactic_type")
+id = "unlocked:cleave"
+metric = "enemy_group_count"
+comparator = "at_least"
+threshold = 3.0
+skill_id = "cleave"
+selector = "highest_count"
+
+[resource]
+script = ExtResource("script")
+kind = "skill"
+class_definition = ExtResource("class")
+skill = ExtResource("skill")
+cost = 120
+default_tactic = SubResource("default_tactic")

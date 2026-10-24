@@ -2,7 +2,7 @@ class_name CrawlProgressionController
 extends RefCounted
 
 var store := CrawlSaveStore.new()
-var economy := CrawlProgressionDefinition.new()
+var economy := CrawlContent.economy()
 var profile: Dictionary = {}
 var active: CrawlRoomFlow
 var active_definition: FloorDefinition
@@ -16,6 +16,11 @@ func initialize(directory: String = "user://progression") -> bool:
 	active = null
 	blocked = false
 	notice = ""
+	var content_errors := CrawlContent.CATALOG.errors()
+	if not content_errors.is_empty():
+		blocked = true
+		notice = "Invalid game content: " + "; ".join(content_errors)
+		return false
 	var loaded := store.load_document("profile", CrawlProgressionCatalog.profile_error)
 	if not loaded.ok:
 		if not loaded.get("missing", false) or FileAccess.file_exists(directory.path_join("run.json")) or FileAccess.file_exists(directory.path_join("run.json.bak")):
@@ -100,7 +105,7 @@ func purchase_reason(kind: String, id: String = "") -> String:
 	var price := 0
 	match kind:
 		"slot":
-			if int(profile.party_slots) >= economy.maximum_slots: return "Party size is at the six-member cap."
+			if int(profile.party_slots) >= economy.maximum_slots: return "Party size is at the %d-member cap." % economy.maximum_slots
 			price = economy.slot_costs[int(profile.party_slots) - economy.starting_slots]
 		"class":
 			if not economy.class_costs.has(id): return "Unknown class upgrade."
@@ -138,7 +143,7 @@ func purchase(kind: String, id: String = "") -> Dictionary:
 	match kind:
 		"slot":
 			candidate.party_slots = int(candidate.party_slots) + 1
-			candidate.loadout.append("warrior")
+			candidate.loadout.append(economy.starting_party[0].id)
 		"class": candidate.classes.append(id)
 		"skill": candidate.skills.append(id)
 		"rank": candidate.ranks[id] = int(candidate.ranks.get(id, 0)) + 1

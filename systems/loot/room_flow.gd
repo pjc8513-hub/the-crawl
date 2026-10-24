@@ -19,26 +19,7 @@ var run_id: String = ""
 
 
 static func item_pool() -> Array[CrawlItemDefinition]:
-	var result: Array[CrawlItemDefinition] = []
-	for spec in [
-		["iron_edge", "Iron Edge", "weapon", "A dependable blade for the front line.", {"attack": 5}],
-		["ember_staff", "Ember Staff", "weapon", "A staff that strengthens spells and expands mana.", {"magic": 5, "max_mp": 6}],
-		["ward_mail", "Ward Mail", "armor", "Reinforced links for a sturdier defender.", {"armor": 2, "max_hp": 12}],
-		["bloodstone", "Bloodstone Charm", "charm", "A deep reserve of vitality.", {"max_hp": 20}],
-		["focus", "Focus Charm", "charm", "A talisman for longer spell rotations.", {"max_mp": 10, "magic": 2}],
-		["swift_blade", "Swift Blade", "weapon", "Strike harder and earlier in the round.", {"attack": 3, "initiative": 2}],
-		["winter_staff", "Winter Staff", "weapon", "Improves control spells and keeps enemies frozen.", {"magic": 2, "status_chance_bonus": 15, "freeze_thaw_penalty": 20}],
-		["glacial_charm", "Glacial Charm", "charm", "Can hold frozen enemies indefinitely when paired with Winter Staff.", {"freeze_thaw_penalty": 30}]
-	]:
-		var item := CrawlItemDefinition.new()
-		item.id = spec[0]
-		item.display_name = spec[1]
-		item.slot = spec[2]
-		item.description = spec[3]
-		for stat in spec[4]:
-			item.set(stat, spec[4][stat])
-		result.append(item)
-	return result
+	return CrawlContent.CATALOG.items.duplicate()
 
 
 func room_reason() -> String:

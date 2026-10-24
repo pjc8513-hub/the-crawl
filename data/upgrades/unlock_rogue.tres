@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CrawlUpgradeDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://resources/UpgradeDefinition.gd" id="script"]
+[ext_resource type="Resource" path="res://data/classes/rogue.tres" id="class"]
+
+[resource]
+script = ExtResource("script")
+kind = "class"
+class_definition = ExtResource("class")
+cost = 120

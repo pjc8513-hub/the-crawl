@@ -10,5 +10,12 @@ extends Resource
 @export var armor: int = 0
 @export var initiative: int = 5
 @export_enum("Front", "Middle", "Back") var formation: String = "Front"
-@export var skill_ids: Array[String] = ["attack", "potion", "defend"]
+@export var skills: Array[CrawlCombatSkill] = []
 @export var tactics: Array[CrawlTacticRule] = []
+
+
+func skill_ids() -> Array[String]:
+	var result: Array[String] = []
+	for skill in skills:
+		result.append(skill.id)
+	return result

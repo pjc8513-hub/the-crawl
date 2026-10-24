@@ -53,7 +53,7 @@ func from_class(definition: CrawlClassDefinition, actor_id: String) -> void:
 	armor = maxi(0, definition.armor)
 	initiative = definition.initiative
 	row = definition.formation
-	known_skills = definition.skill_ids.duplicate()
+	known_skills = definition.skill_ids()
 	tactics.clear()
 	for rule in definition.tactics:
 		tactics.append(rule.duplicate(true))

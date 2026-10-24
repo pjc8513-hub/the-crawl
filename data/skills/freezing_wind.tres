@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CrawlCombatSkill" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/CombatSkill.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+display_name = "Freezing Wind"
+element = "air"
+id = "freezing_wind"
+kind = "group_damage"
+mp_cost = 7
+power = 4
+reach = "ranged"
+status_chance = 35
+status_id = "frozen"
+status_potency = 0
+status_turns = 100
+variance = 0

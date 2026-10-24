@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="CrawlClassDefinition" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://resources/ClassDefinition.gd" id="script"]
+[ext_resource type="Script" path="res://resources/CombatSkill.gd" id="skill_type"]
+[ext_resource type="Script" path="res://resources/TacticRule.gd" id="tactic_type"]
+[ext_resource type="Resource" path="res://data/skills/attack.tres" id="attack"]
+[ext_resource type="Resource" path="res://data/skills/potion.tres" id="potion"]
+[ext_resource type="Resource" path="res://data/skills/defend.tres" id="defend"]
+[ext_resource type="Resource" path="res://data/skills/heal.tres" id="heal"]
+[ext_resource type="Resource" path="res://data/tactics/potion.tres" id="tactic_potion"]
+[ext_resource type="Resource" path="res://data/tactics/heal.tres" id="tactic_heal"]
+[ext_resource type="Resource" path="res://data/tactics/attack.tres" id="tactic_attack"]
+
+[resource]
+script = ExtResource("script")
+armor = 2
+attack = 8
+display_name = "Cleric"
+formation = "Middle"
+id = "cleric"
+initiative = 5
+magic = 7
+max_hp = 95
+max_mp = 40
+skills = Array[ExtResource("skill_type")]([ExtResource("attack"), ExtResource("potion"), ExtResource("defend"), ExtResource("heal")])
+tactics = Array[ExtResource("tactic_type")]([ExtResource("tactic_potion"), ExtResource("tactic_heal"), ExtResource("tactic_attack")])

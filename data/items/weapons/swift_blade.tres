@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CrawlItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/ItemDefinition.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+armor = 0
+attack = 3
+description = "Strike harder and earlier in the round."
+display_name = "Swift Blade"
+freeze_thaw_penalty = 0
+id = "swift_blade"
+initiative = 2
+magic = 0
+max_hp = 0
+max_mp = 0
+slot = "weapon"
+status_chance_bonus = 0

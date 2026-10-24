@@ -63,7 +63,7 @@ func bind(controller: CrawlProgressionController) -> void:
 			selector.custom_minimum_size.x = 180
 			var selected: String = chosen[index] if index < chosen.size() and profile.classes.has(chosen[index]) else profile.loadout[index]
 			for class_id in profile.classes:
-				selector.add_item(class_id.capitalize())
+				selector.add_item(CrawlContent.classes()[class_id].display_name)
 				selector.set_item_metadata(selector.item_count - 1, class_id)
 				if class_id == selected: selector.select(selector.item_count - 1)
 			card.add_child(selector)
@@ -72,16 +72,16 @@ func bind(controller: CrawlProgressionController) -> void:
 	upgrades_heading = CrawlGameTheme.label(body, "PERMANENT UPGRADES · %d banked gold" % int(profile.gold), true)
 	_row("Party capacity · %d / %d" % [int(profile.party_slots), controller.economy.maximum_slots], "slot", "")
 	for class_id in controller.economy.class_costs:
-		_row("Unlock " + class_id.capitalize(), "class", class_id)
+		_row("Unlock " + CrawlContent.classes()[class_id].display_name, "class", class_id)
 	var skills := CrawlCombatContent.skills()
 	for skill_id in controller.economy.skill_unlocks:
 		var owner: String = controller.economy.skill_unlocks[skill_id]["class"]
-		_row("Unlock %s · %s" % [skills[skill_id].display_name, owner.capitalize()], "skill", skill_id)
-	for skill_id in controller.economy.rank_costs:
-		var rank_effect: String = "+10% effect chance per rank" if skill_id in ["sleep", "freezing_wind", "charming_potion", "earthquake"] else "+%d power per rank" % controller.economy.power_per_rank[skill_id]
-		if skill_id in ["freezing_wind", "earthquake"]:
-			rank_effect += ", +%d power" % controller.economy.power_per_rank[skill_id]
-		_row("%s · rank %d / %d · %s" % [skills[skill_id].display_name, int(profile.ranks.get(skill_id, 0)), controller.economy.maximum_skill_rank, rank_effect], "rank", skill_id)
+		_row("Unlock %s · %s" % [skills[skill_id].display_name, CrawlContent.classes()[owner].display_name], "skill", skill_id)
+	for upgrade in controller.economy.upgrades:
+		if upgrade.kind != "rank":
+			continue
+		var skill_id := upgrade.skill.id
+		_row("%s · rank %d / %d · %s" % [upgrade.skill.display_name, int(profile.ranks.get(skill_id, 0)), controller.economy.maximum_skill_rank, upgrade.rank_summary()], "rank", skill_id)
 
 
 func _row(label_text: String, kind: String, id: String) -> void:

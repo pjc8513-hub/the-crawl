@@ -1,16 +1,8 @@
 class_name CrawlProgressionCatalog
 extends RefCounted
 
-const STARTING_CLASSES: Array[String] = ["warrior", "cleric", "mage"]
-const ENEMIES: Array[String] = ["koboldfighter", "koboldwizard", "koboldknight", "koboldcleric", "koboldninja", "koboldskeleton", "koboldzombie", "goblinwizard", "goblinknight", "goblincleric", "goblinninja", "goblinskeleton", "goblinzombie", "elementalwizard", "elementalknight", "humanwizard", "humanknight", "humancleric", "humanninja", "humanskeleton", "humanzombie", "dragonwizard", "dragonknight", "dragoncleric", "dragonninja", "dragonskeleton", "dragonzombie", "demonwizard", "demonknight", "demoncleric", "demonninja"]
-
-
 static func enemies() -> Dictionary:
-	var result: Dictionary = {}
-	for filename in ENEMIES:
-		var enemy: EnemyResource = load("res://data/enemies/%s.tres" % filename)
-		result[enemy.id] = enemy
-	return result
+	return CrawlContent.enemies()
 
 
 static func items() -> Dictionary:
@@ -21,58 +13,50 @@ static func items() -> Dictionary:
 
 
 static func fresh_profile() -> Dictionary:
-	return {"version": 1, "gold": 0, "party_slots": 3, "classes": ["warrior", "cleric", "mage"], "skills": [], "ranks": {}, "presets": {}, "settled": {}, "next_run": 1, "loadout": ["warrior", "cleric", "mage"]}
+	var economy := CrawlContent.economy()
+	var starting := economy.starting_class_ids()
+	return {"version": 1, "gold": 0, "party_slots": economy.starting_slots, "classes": starting.duplicate(), "skills": [], "ranks": {}, "presets": {}, "settled": {}, "next_run": 1, "loadout": starting.duplicate()}
 
 
 static func skills(profile: Dictionary) -> Dictionary:
-	var result := CrawlCombatContent.skills()
-	var definition := CrawlProgressionDefinition.new()
-	for skill_id in profile.ranks:
-		result[skill_id].power += int(profile.ranks[skill_id]) * int(definition.power_per_rank[skill_id])
-		if skill_id in ["sleep", "freezing_wind", "charming_potion", "earthquake"]:
-			result[skill_id].status_chance = mini(100, result[skill_id].status_chance + 10 * int(profile.ranks[skill_id]))
+	var result := CrawlContent.skills()
+	for upgrade in CrawlContent.economy().upgrades:
+		if upgrade.kind != "rank":
+			continue
+		var rank := int(profile.ranks.get(upgrade.skill.id, 0))
+		var skill: CrawlCombatSkill = result[upgrade.skill.id]
+		skill.power += rank * upgrade.power_per_rank
+		skill.status_chance = mini(100, skill.status_chance + rank * upgrade.status_chance_per_rank)
 	return result
 
 
 static func party(profile: Dictionary, classes: Array) -> Array[CrawlCombatant]:
 	var result: Array[CrawlCombatant] = []
+	var definitions := CrawlContent.classes()
+	var skills_by_id := CrawlContent.skills()
 	for index in range(classes.size()):
 		var class_id: String = classes[index]
-		var actor: CrawlCombatant
-		if class_id in STARTING_CLASSES:
-			actor = CrawlCombatContent.party()[STARTING_CLASSES.find(class_id)]
-		else:
-			var definition := CrawlClassDefinition.new()
-			definition.id = "rogue"
-			definition.display_name = "Rogue"
-			definition.max_hp = 85
-			definition.max_mp = 18
-			definition.attack = 13
-			definition.armor = 2
-			definition.initiative = 11
-			definition.formation = "Middle"
-			definition.tactics = [CrawlCombatContent.rule("potion", "self_hp_percent", 25, "potion", "self"), CrawlCombatContent.rule("attack", "always", 0, "attack", "lowest_hp")]
-			actor = CrawlCombatant.new()
-			actor.from_class(definition, "")
-		actor.id = "party:%02d:%s" % [index, class_id]
-		actor.group_id = actor.id
+		if not definitions.has(class_id):
+			push_error("Unknown class: " + class_id)
+			return []
+		var actor := CrawlCombatant.new()
+		actor.from_class(definitions[class_id], "party:%02d:%s" % [index, class_id])
 		actor.display_name += " %d" % (index + 1)
-		var unlocks := CrawlProgressionDefinition.new().skill_unlocks
 		for skill_id in profile.skills:
-			if unlocks[skill_id]["class"] == class_id:
+			for upgrade in CrawlContent.economy().upgrades:
+				if upgrade.kind != "skill" or upgrade.skill.id != skill_id or upgrade.class_definition.id != class_id:
+					continue
 				actor.known_skills.append(skill_id)
+				var skill: CrawlCombatSkill = skills_by_id[skill_id]
 				if skill_id == "mind_expansion":
-					actor.max_mp += CrawlCombatContent.skills()[skill_id].power
+					actor.max_mp += skill.power
 					actor.mp = actor.max_mp
 				elif skill_id == "meditation":
-					actor.meditation_percent = CrawlCombatContent.skills()[skill_id].power
+					actor.meditation_percent = skill.power
 				elif skill_id == "focus":
-					actor.focus_percent = CrawlCombatContent.skills()[skill_id].power
-				if CrawlCombatContent.skills()[skill_id].kind == "passive":
-					continue
-				var grouped: bool = skill_id in ["cleave", "freezing_wind", "charming_potion", "earthquake", "chain_lightning"]
-				var rule := CrawlCombatContent.rule("unlocked:" + skill_id, "enemy_group_count", 3 if grouped else 1, skill_id, "highest_count" if grouped else "lowest_hp")
-				actor.tactics.insert(maxi(0, actor.tactics.size() - 1), rule)
+					actor.focus_percent = skill.power
+				if upgrade.default_tactic != null:
+					actor.tactics.insert(maxi(0, actor.tactics.size() - 1), upgrade.default_tactic.duplicate(true))
 		if profile.presets.has(class_id):
 			actor.tactics.clear()
 			for data in profile.presets[class_id]:
@@ -117,18 +101,19 @@ static func profile_error(data: Dictionary) -> String:
 	if not integer(data.get("version"), 1, 100000): return "Invalid profile version."
 	if data.get("version") != 1:
 		return "Unsupported profile version."
-	if not integer(data.get("gold"), 0, 2000000000) or not integer(data.get("party_slots"), 3, 6) or not integer(data.get("next_run"), 1, 2000000000):
+	if not integer(data.get("gold"), 0, 2000000000) or not integer(data.get("party_slots"), CrawlContent.economy().starting_slots, CrawlContent.economy().maximum_slots) or not integer(data.get("next_run"), 1, 2000000000):
 		return "Invalid profile currency, slots or run counter."
 	for field in ["classes", "skills", "loadout"]:
-		if not data.get(field) is Array or data[field].size() > 12:
+		var limit: int = {"classes": CrawlContent.CATALOG.classes.size(), "skills": CrawlContent.economy().skill_unlocks.size(), "loadout": CrawlContent.economy().maximum_slots}[field]
+		if not data.get(field) is Array or data[field].size() > limit:
 			return "Invalid profile unlock list."
-	for id in STARTING_CLASSES:
+	for id in CrawlContent.economy().starting_class_ids():
 		if not data.classes.has(id): return "Missing starting class."
 	var seen: Dictionary = {}
 	for id in data.classes:
-		if not id is String or id not in ["warrior", "cleric", "mage", "rogue"] or seen.has(id): return "Invalid class unlock."
+		if not id is String or not CrawlContent.classes().has(id) or seen.has(id): return "Invalid class unlock."
 		seen[id] = true
-	var definition := CrawlProgressionDefinition.new()
+	var definition := CrawlContent.economy()
 	seen.clear()
 	for id in data.skills:
 		if not id is String or not definition.skill_unlocks.has(id) or seen.has(id) or not data.classes.has(definition.skill_unlocks[id]["class"]): return "Invalid skill unlock."

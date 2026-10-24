@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CrawlCombatSkill" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/CombatSkill.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+display_name = "Combust"
+element = "fire"
+id = "combust"
+kind = "attack"
+mp_cost = 12
+power = 24
+reach = "ranged"
+status_chance = 100
+status_id = "burn"
+status_potency = 4
+status_turns = 3
+variance = 0

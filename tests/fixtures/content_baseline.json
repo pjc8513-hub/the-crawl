@@ -1,0 +1,832 @@
+{
+  "classes": [
+    {
+      "armor": 4,
+      "attack": 16,
+      "display_name": "Warrior",
+      "formation": "Front",
+      "id": "warrior",
+      "initiative": 6,
+      "magic": 0,
+      "max_hp": 120,
+      "max_mp": 12,
+      "skill_ids": [
+        "attack",
+        "potion",
+        "defend"
+      ],
+      "tactics": [
+        {
+          "comparator": "below",
+          "enabled": true,
+          "id": "potion",
+          "metric": "self_hp_percent",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "self",
+          "skill_id": "potion",
+          "threshold": 25
+        },
+        {
+          "comparator": "below",
+          "enabled": true,
+          "id": "attack",
+          "metric": "always",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "lowest_hp",
+          "skill_id": "attack",
+          "threshold": 0
+        }
+      ]
+    },
+    {
+      "armor": 2,
+      "attack": 8,
+      "display_name": "Cleric",
+      "formation": "Middle",
+      "id": "cleric",
+      "initiative": 5,
+      "magic": 7,
+      "max_hp": 95,
+      "max_mp": 40,
+      "skill_ids": [
+        "attack",
+        "potion",
+        "defend",
+        "heal"
+      ],
+      "tactics": [
+        {
+          "comparator": "below",
+          "enabled": true,
+          "id": "potion",
+          "metric": "self_hp_percent",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "self",
+          "skill_id": "potion",
+          "threshold": 25
+        },
+        {
+          "comparator": "below",
+          "enabled": true,
+          "id": "heal",
+          "metric": "lowest_ally_hp_percent",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "lowest_hp_percent",
+          "skill_id": "heal",
+          "threshold": 40
+        },
+        {
+          "comparator": "below",
+          "enabled": true,
+          "id": "attack",
+          "metric": "always",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "lowest_hp",
+          "skill_id": "attack",
+          "threshold": 0
+        }
+      ]
+    },
+    {
+      "armor": 1,
+      "attack": 5,
+      "display_name": "Mage",
+      "formation": "Back",
+      "id": "mage",
+      "initiative": 8,
+      "magic": 6,
+      "max_hp": 75,
+      "max_mp": 42,
+      "skill_ids": [
+        "attack",
+        "potion",
+        "defend",
+        "sleep",
+        "fireball"
+      ],
+      "tactics": [
+        {
+          "comparator": "below",
+          "enabled": true,
+          "id": "potion",
+          "metric": "self_hp_percent",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "self",
+          "skill_id": "potion",
+          "threshold": 25
+        },
+        {
+          "comparator": "at_least",
+          "enabled": true,
+          "id": "sleep",
+          "metric": "enemy_group_count",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "highest_count",
+          "skill_id": "sleep",
+          "threshold": 3
+        },
+        {
+          "comparator": "above",
+          "enabled": true,
+          "id": "fireball",
+          "metric": "self_mp_percent",
+          "min_group_count": 4,
+          "reserve_mp": 0,
+          "selector": "highest_count",
+          "skill_id": "fireball",
+          "threshold": 35
+        },
+        {
+          "comparator": "below",
+          "enabled": true,
+          "id": "attack",
+          "metric": "always",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "lowest_hp",
+          "skill_id": "attack",
+          "threshold": 0
+        }
+      ]
+    },
+    {
+      "armor": 2,
+      "attack": 13,
+      "display_name": "Rogue",
+      "formation": "Middle",
+      "id": "rogue",
+      "initiative": 11,
+      "magic": 0,
+      "max_hp": 85,
+      "max_mp": 18,
+      "skill_ids": [
+        "attack",
+        "potion",
+        "defend"
+      ],
+      "tactics": [
+        {
+          "comparator": "below",
+          "enabled": true,
+          "id": "potion",
+          "metric": "self_hp_percent",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "self",
+          "skill_id": "potion",
+          "threshold": 25
+        },
+        {
+          "comparator": "below",
+          "enabled": true,
+          "id": "attack",
+          "metric": "always",
+          "min_group_count": 0,
+          "reserve_mp": 0,
+          "selector": "lowest_hp",
+          "skill_id": "attack",
+          "threshold": 0
+        }
+      ]
+    }
+  ],
+  "economy": {
+    "class_costs": {
+      "rogue": 120
+    },
+    "maximum_skill_rank": 3,
+    "maximum_slots": 6,
+    "power_per_rank": {
+      "attack": 2,
+      "chain_lightning": 4,
+      "charming_potion": 0,
+      "cleave": 3,
+      "combust": 5,
+      "earthquake": 3,
+      "fireball": 3,
+      "freezing_wind": 2,
+      "heal": 4,
+      "poison_strike": 2,
+      "sleep": 0,
+      "stun_strike": 2
+    },
+    "rank_costs": {
+      "attack": 60,
+      "chain_lightning": 240,
+      "charming_potion": 140,
+      "cleave": 100,
+      "combust": 200,
+      "earthquake": 160,
+      "fireball": 100,
+      "freezing_wind": 120,
+      "heal": 80,
+      "poison_strike": 80,
+      "sleep": 100,
+      "stun_strike": 100
+    },
+    "skill_unlocks": {
+      "aegis": {
+        "class": "warrior",
+        "cost": 220
+      },
+      "battle_harden": {
+        "class": "warrior",
+        "cost": 120
+      },
+      "berserk": {
+        "class": "warrior",
+        "cost": 180
+      },
+      "blood_lust": {
+        "class": "warrior",
+        "cost": 160
+      },
+      "chain_lightning": {
+        "class": "mage",
+        "cost": 240
+      },
+      "charming_potion": {
+        "class": "mage",
+        "cost": 140
+      },
+      "cleave": {
+        "class": "warrior",
+        "cost": 120
+      },
+      "combust": {
+        "class": "mage",
+        "cost": 200
+      },
+      "earthquake": {
+        "class": "mage",
+        "cost": 160
+      },
+      "focus": {
+        "class": "mage",
+        "cost": 200
+      },
+      "freezing_wind": {
+        "class": "mage",
+        "cost": 120
+      },
+      "giant_slayer": {
+        "class": "warrior",
+        "cost": 180
+      },
+      "intimidate": {
+        "class": "warrior",
+        "cost": 120
+      },
+      "magic_missile": {
+        "class": "mage",
+        "cost": 80
+      },
+      "meditation": {
+        "class": "mage",
+        "cost": 180
+      },
+      "mind_expansion": {
+        "class": "mage",
+        "cost": 180
+      },
+      "poison_strike": {
+        "class": "rogue",
+        "cost": 100
+      },
+      "stun_strike": {
+        "class": "rogue",
+        "cost": 160
+      }
+    },
+    "slot_costs": [
+      150,
+      350,
+      700
+    ],
+    "starting_slots": 3
+  },
+  "enemies": [
+    "koboldfighter",
+    "koboldwizard",
+    "koboldknight",
+    "koboldcleric",
+    "koboldninja",
+    "koboldskeleton",
+    "koboldzombie",
+    "goblinwizard",
+    "goblinknight",
+    "goblincleric",
+    "goblinninja",
+    "goblinskeleton",
+    "goblinzombie",
+    "elementalwizard",
+    "elementalknight",
+    "humanwizard",
+    "humanknight",
+    "humancleric",
+    "humanninja",
+    "humanskeleton",
+    "humanzombie",
+    "dragonwizard",
+    "dragonknight",
+    "dragoncleric",
+    "dragonninja",
+    "dragonskeleton",
+    "dragonzombie",
+    "demonwizard",
+    "demonknight",
+    "demoncleric",
+    "demonninja"
+  ],
+  "events": [
+    {
+      "hash": "f2ca2c101d7303ed8ce8499cba539ad1eb976c0d1a2415e7e92daa9d6b8f102e",
+      "seed": 1
+    },
+    {
+      "hash": "fd9a367ad77fc27e5aa8a6657ead9e62837a1b392cee1e49a1eb0d7a0e34387b",
+      "seed": 17
+    },
+    {
+      "hash": "ddc5b424fb0624f30b50fd54c7e8c836377f493bf1695332982100cf23a965d4",
+      "seed": 42
+    },
+    {
+      "hash": "84a95465334998dc65d991241a77a470375c031d63b67944c19608537ae00b68",
+      "seed": 999
+    }
+  ],
+  "items": [
+    {
+      "armor": 0,
+      "attack": 5,
+      "description": "A dependable blade for the front line.",
+      "display_name": "Iron Edge",
+      "freeze_thaw_penalty": 0,
+      "id": "iron_edge",
+      "initiative": 0,
+      "magic": 0,
+      "max_hp": 0,
+      "max_mp": 0,
+      "slot": "weapon",
+      "status_chance_bonus": 0
+    },
+    {
+      "armor": 0,
+      "attack": 0,
+      "description": "A staff that strengthens spells and expands mana.",
+      "display_name": "Ember Staff",
+      "freeze_thaw_penalty": 0,
+      "id": "ember_staff",
+      "initiative": 0,
+      "magic": 5,
+      "max_hp": 0,
+      "max_mp": 6,
+      "slot": "weapon",
+      "status_chance_bonus": 0
+    },
+    {
+      "armor": 2,
+      "attack": 0,
+      "description": "Reinforced links for a sturdier defender.",
+      "display_name": "Ward Mail",
+      "freeze_thaw_penalty": 0,
+      "id": "ward_mail",
+      "initiative": 0,
+      "magic": 0,
+      "max_hp": 12,
+      "max_mp": 0,
+      "slot": "armor",
+      "status_chance_bonus": 0
+    },
+    {
+      "armor": 0,
+      "attack": 0,
+      "description": "A deep reserve of vitality.",
+      "display_name": "Bloodstone Charm",
+      "freeze_thaw_penalty": 0,
+      "id": "bloodstone",
+      "initiative": 0,
+      "magic": 0,
+      "max_hp": 20,
+      "max_mp": 0,
+      "slot": "charm",
+      "status_chance_bonus": 0
+    },
+    {
+      "armor": 0,
+      "attack": 0,
+      "description": "A talisman for longer spell rotations.",
+      "display_name": "Focus Charm",
+      "freeze_thaw_penalty": 0,
+      "id": "focus",
+      "initiative": 0,
+      "magic": 2,
+      "max_hp": 0,
+      "max_mp": 10,
+      "slot": "charm",
+      "status_chance_bonus": 0
+    },
+    {
+      "armor": 0,
+      "attack": 3,
+      "description": "Strike harder and earlier in the round.",
+      "display_name": "Swift Blade",
+      "freeze_thaw_penalty": 0,
+      "id": "swift_blade",
+      "initiative": 2,
+      "magic": 0,
+      "max_hp": 0,
+      "max_mp": 0,
+      "slot": "weapon",
+      "status_chance_bonus": 0
+    },
+    {
+      "armor": 0,
+      "attack": 0,
+      "description": "Improves control spells and keeps enemies frozen.",
+      "display_name": "Winter Staff",
+      "freeze_thaw_penalty": 20,
+      "id": "winter_staff",
+      "initiative": 0,
+      "magic": 2,
+      "max_hp": 0,
+      "max_mp": 0,
+      "slot": "weapon",
+      "status_chance_bonus": 15
+    },
+    {
+      "armor": 0,
+      "attack": 0,
+      "description": "Can hold frozen enemies indefinitely when paired with Winter Staff.",
+      "display_name": "Glacial Charm",
+      "freeze_thaw_penalty": 30,
+      "id": "glacial_charm",
+      "initiative": 0,
+      "magic": 0,
+      "max_hp": 0,
+      "max_mp": 0,
+      "slot": "charm",
+      "status_chance_bonus": 0
+    }
+  ],
+  "skills": [
+    {
+      "display_name": "Attack",
+      "element": "physical",
+      "id": "attack",
+      "kind": "attack",
+      "mp_cost": 0,
+      "power": 0,
+      "reach": "melee",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Defend",
+      "element": "physical",
+      "id": "defend",
+      "kind": "defend",
+      "mp_cost": 0,
+      "power": 0,
+      "reach": "melee",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Healing potion",
+      "element": "spirit",
+      "id": "potion",
+      "kind": "potion",
+      "mp_cost": 0,
+      "power": 35,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Heal",
+      "element": "spirit",
+      "id": "heal",
+      "kind": "heal",
+      "mp_cost": 4,
+      "power": 18,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Fireball",
+      "element": "fire",
+      "id": "fireball",
+      "kind": "group_damage",
+      "mp_cost": 6,
+      "power": 10,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Fire dart",
+      "element": "fire",
+      "id": "dart",
+      "kind": "attack",
+      "mp_cost": 3,
+      "power": 3,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Cleave",
+      "element": "physical",
+      "id": "cleave",
+      "kind": "cleave",
+      "mp_cost": 3,
+      "power": 8,
+      "reach": "melee",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Poison strike",
+      "element": "physical",
+      "id": "poison_strike",
+      "kind": "attack",
+      "mp_cost": 2,
+      "power": 0,
+      "reach": "melee",
+      "status_chance": 100,
+      "status_id": "poison",
+      "status_potency": 3,
+      "status_turns": 2,
+      "variance": 0
+    },
+    {
+      "display_name": "Stunning strike",
+      "element": "physical",
+      "id": "stun_strike",
+      "kind": "attack",
+      "mp_cost": 3,
+      "power": 0,
+      "reach": "melee",
+      "status_chance": 100,
+      "status_id": "stun",
+      "status_potency": 0,
+      "status_turns": 1,
+      "variance": 0
+    },
+    {
+      "display_name": "Sleep",
+      "element": "air",
+      "id": "sleep",
+      "kind": "group_status",
+      "mp_cost": 5,
+      "power": 0,
+      "reach": "ranged",
+      "status_chance": 45,
+      "status_id": "sleep",
+      "status_potency": 0,
+      "status_turns": 100,
+      "variance": 0
+    },
+    {
+      "display_name": "Freezing Wind",
+      "element": "air",
+      "id": "freezing_wind",
+      "kind": "group_damage",
+      "mp_cost": 7,
+      "power": 4,
+      "reach": "ranged",
+      "status_chance": 35,
+      "status_id": "frozen",
+      "status_potency": 0,
+      "status_turns": 100,
+      "variance": 0
+    },
+    {
+      "display_name": "Charming Potion",
+      "element": "water",
+      "id": "charming_potion",
+      "kind": "group_flee",
+      "mp_cost": 9,
+      "power": 0,
+      "reach": "ranged",
+      "status_chance": 35,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Earthquake",
+      "element": "earth",
+      "id": "earthquake",
+      "kind": "group_damage",
+      "mp_cost": 10,
+      "power": 9,
+      "reach": "ranged",
+      "status_chance": 30,
+      "status_id": "stun",
+      "status_potency": 0,
+      "status_turns": 1,
+      "variance": 0
+    },
+    {
+      "display_name": "Combust",
+      "element": "fire",
+      "id": "combust",
+      "kind": "attack",
+      "mp_cost": 12,
+      "power": 24,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "burn",
+      "status_potency": 4,
+      "status_turns": 3,
+      "variance": 0
+    },
+    {
+      "display_name": "Chain Lightning",
+      "element": "air",
+      "id": "chain_lightning",
+      "kind": "group_damage",
+      "mp_cost": 18,
+      "power": 18,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Magic Missile",
+      "element": "water",
+      "id": "magic_missile",
+      "kind": "attack",
+      "mp_cost": 0,
+      "power": 3,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Meditation",
+      "element": "spirit",
+      "id": "meditation",
+      "kind": "passive",
+      "mp_cost": 0,
+      "power": 20,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Mind Expansion",
+      "element": "spirit",
+      "id": "mind_expansion",
+      "kind": "passive",
+      "mp_cost": 0,
+      "power": 20,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Focus",
+      "element": "spirit",
+      "id": "focus",
+      "kind": "passive",
+      "mp_cost": 0,
+      "power": 20,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Intimidate",
+      "element": "spirit",
+      "id": "intimidate",
+      "kind": "passive",
+      "mp_cost": 0,
+      "power": 35,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Battle Harden",
+      "element": "physical",
+      "id": "battle_harden",
+      "kind": "passive",
+      "mp_cost": 0,
+      "power": 1,
+      "reach": "melee",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Blood Lust",
+      "element": "physical",
+      "id": "blood_lust",
+      "kind": "passive",
+      "mp_cost": 0,
+      "power": 12,
+      "reach": "melee",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Giant Slayer",
+      "element": "physical",
+      "id": "giant_slayer",
+      "kind": "passive",
+      "mp_cost": 0,
+      "power": 50,
+      "reach": "melee",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Berserk",
+      "element": "physical",
+      "id": "berserk",
+      "kind": "passive",
+      "mp_cost": 0,
+      "power": 10,
+      "reach": "melee",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    },
+    {
+      "display_name": "Aegis",
+      "element": "spirit",
+      "id": "aegis",
+      "kind": "passive",
+      "mp_cost": 0,
+      "power": 20,
+      "reach": "ranged",
+      "status_chance": 100,
+      "status_id": "",
+      "status_potency": 0,
+      "status_turns": 0,
+      "variance": 0
+    }
+  ]
+}

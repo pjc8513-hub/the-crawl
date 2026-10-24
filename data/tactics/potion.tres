@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CrawlTacticRule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/TacticRule.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+comparator = "below"
+enabled = true
+id = "potion"
+metric = "self_hp_percent"
+min_group_count = 0
+reserve_mp = 0
+selector = "self"
+skill_id = "potion"
+threshold = 25

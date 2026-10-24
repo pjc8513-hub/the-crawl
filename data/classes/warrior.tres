@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="CrawlClassDefinition" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://resources/ClassDefinition.gd" id="script"]
+[ext_resource type="Script" path="res://resources/CombatSkill.gd" id="skill_type"]
+[ext_resource type="Script" path="res://resources/TacticRule.gd" id="tactic_type"]
+[ext_resource type="Resource" path="res://data/skills/attack.tres" id="attack"]
+[ext_resource type="Resource" path="res://data/skills/potion.tres" id="potion"]
+[ext_resource type="Resource" path="res://data/skills/defend.tres" id="defend"]
+[ext_resource type="Resource" path="res://data/tactics/potion.tres" id="tactic_potion"]
+[ext_resource type="Resource" path="res://data/tactics/attack.tres" id="tactic_attack"]
+
+[resource]
+script = ExtResource("script")
+armor = 4
+attack = 16
+display_name = "Warrior"
+formation = "Front"
+id = "warrior"
+initiative = 6
+magic = 0
+max_hp = 120
+max_mp = 12
+skills = Array[ExtResource("skill_type")]([ExtResource("attack"), ExtResource("potion"), ExtResource("defend")])
+tactics = Array[ExtResource("tactic_type")]([ExtResource("tactic_potion"), ExtResource("tactic_attack")])

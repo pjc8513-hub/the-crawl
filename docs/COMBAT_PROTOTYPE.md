@@ -20,7 +20,7 @@ After combat, **Continue** acknowledges results. Victory grants gold once and cl
 
 ## Initial configurable balance
 
-`resources/ClassDefinition.gd`, `CombatSkill.gd` and `TacticRule.gd` define editable fields. `systems/combat/combat_content.gd` builds the initial presets; these are tuning defaults, not final balance. Starting party HP is 120/95/75, MP is 12/40/42, and each member has two 35-HP potions. Cleric healing defaults to below 40% ally HP. Mage Fireball defaults to above 35% MP and a target group of at least four. Potions default to below 25% self HP.
+`resources/ClassDefinition.gd`, `CombatSkill.gd` and `TacticRule.gd` define editable fields. Presets now live in `data/classes/`, `data/skills/` and `data/tactics/`; see [CONTENT_ARCHITECTURE.md](CONTENT_ARCHITECTURE.md) for composition and authoring. These are tuning defaults, not final balance. Starting party HP is 120/95/75, MP is 12/40/42, and each member has two 35-HP potions. Cleric healing defaults to below 40% ally HP. Mage Fireball defaults to above 35% MP and a target group of at least four. Potions default to below 25% self HP.
 
 Enemy HP is rolled from validated dice with a separate HP stream. Enemy physical power is `1 + strength + bonus_damage_base`; magic is `wisdom + magic_amp_base`; physical armor is `floor(endurance / 2)`; initiative is `dexterity + initiative_bonus`. Damage is skill power plus the applicable attack/magic stat, minus physical armor, then defend/resistance reductions. Fire, physical and spirit resistance flags halve matching damage, rounded down. Other resistance types await corresponding skills. Skill damage variance is supported and seed-controlled; supplied skills currently use zero variance.
 

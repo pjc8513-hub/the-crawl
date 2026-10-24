@@ -10,7 +10,7 @@ Gold earned by acknowledged combat victories remains run gold until the expediti
 
 Temporary gear, equipment bonuses, consumables, statuses and camp supplies are cleared at run end. The completion screen keeps final gear names for the summary. Banked gold, purchases, class unlocks, skill ranks, selected party composition and class strategy presets survive.
 
-The lodge offers these provisional economy values from `resources/ProgressionDefinition.gd`:
+The lodge offers these provisional economy values from `data/progression.tres` and the resources in `data/upgrades/`. See [CONTENT_ARCHITECTURE.md](CONTENT_ARCHITECTURE.md) for the resource structure and authoring workflow.
 
 | Purchase | Cost / limit | Effect |
 | --- | --- | --- |

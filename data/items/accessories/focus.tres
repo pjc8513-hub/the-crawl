@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CrawlItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/ItemDefinition.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+armor = 0
+attack = 0
+description = "A talisman for longer spell rotations."
+display_name = "Focus Charm"
+freeze_thaw_penalty = 0
+id = "focus"
+initiative = 0
+magic = 2
+max_hp = 0
+max_mp = 10
+slot = "charm"
+status_chance_bonus = 0

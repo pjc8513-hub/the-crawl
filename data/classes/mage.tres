@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="CrawlClassDefinition" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://resources/ClassDefinition.gd" id="script"]
+[ext_resource type="Script" path="res://resources/CombatSkill.gd" id="skill_type"]
+[ext_resource type="Script" path="res://resources/TacticRule.gd" id="tactic_type"]
+[ext_resource type="Resource" path="res://data/skills/attack.tres" id="attack"]
+[ext_resource type="Resource" path="res://data/skills/potion.tres" id="potion"]
+[ext_resource type="Resource" path="res://data/skills/defend.tres" id="defend"]
+[ext_resource type="Resource" path="res://data/skills/sleep.tres" id="sleep"]
+[ext_resource type="Resource" path="res://data/skills/fireball.tres" id="fireball"]
+[ext_resource type="Resource" path="res://data/tactics/potion.tres" id="tactic_potion"]
+[ext_resource type="Resource" path="res://data/tactics/sleep.tres" id="tactic_sleep"]
+[ext_resource type="Resource" path="res://data/tactics/fireball.tres" id="tactic_fireball"]
+[ext_resource type="Resource" path="res://data/tactics/attack.tres" id="tactic_attack"]
+
+[resource]
+script = ExtResource("script")
+armor = 1
+attack = 5
+display_name = "Mage"
+formation = "Back"
+id = "mage"
+initiative = 8
+magic = 6
+max_hp = 75
+max_mp = 42
+skills = Array[ExtResource("skill_type")]([ExtResource("attack"), ExtResource("potion"), ExtResource("defend"), ExtResource("sleep"), ExtResource("fireball")])
+tactics = Array[ExtResource("tactic_type")]([ExtResource("tactic_potion"), ExtResource("tactic_sleep"), ExtResource("tactic_fireball"), ExtResource("tactic_attack")])

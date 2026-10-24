@@ -50,7 +50,7 @@ static func _actor_error(data: Variant) -> String:
 	if not data.get("fled", false) is bool or not CrawlProgressionCatalog.integer(data.get("status_chance_bonus", 0), 0, 1000) or not CrawlProgressionCatalog.integer(data.get("freeze_thaw_penalty", 0), 0, 1000): return "Invalid actor effect bonuses."
 	if not CrawlProgressionCatalog.integer(data.get("meditation_percent", 0), 0, 100) or not CrawlProgressionCatalog.integer(data.get("focus_percent", 0), 0, 100): return "Invalid passive bonuses."
 	if not CrawlProgressionCatalog.integer(data.get("battle_armor", 0), 0, 1000) or not CrawlProgressionCatalog.integer(data.get("bloodlust_bonus", 0), 0, 1000): return "Invalid combat bonuses."
-	if not data.get("known_skills") is Array or data.known_skills.size() > 16: return "Invalid learned skills."
+	if not data.get("known_skills") is Array or data.known_skills.size() > CrawlContent.CATALOG.skills.size(): return "Invalid learned skills."
 	for id in data.known_skills:
 		if not id is String or not CrawlCombatContent.skills().has(id): return "Unknown learned skill."
 	if CrawlProgressionCatalog.rules_error(data.get("tactics")) != "": return "Invalid saved tactics."
@@ -213,7 +213,7 @@ static func unpack(data: Dictionary) -> Dictionary:
 	for record in data.party:
 		var actor_error := _actor_error(record)
 		if actor_error != "": return _fail(actor_error)
-		if record.class_id not in ["warrior", "cleric", "mage", "rogue"] or record.side != "party" or record.group_id != record.id or seen.has(record.id): return _fail("Invalid party identity.")
+		if not CrawlContent.classes().has(record.class_id) or record.side != "party" or record.group_id != record.id or seen.has(record.id): return _fail("Invalid party identity.")
 		seen[record.id] = true
 		session.party.append(unpack_actor(record))
 	var flow := CrawlRoomFlow.new()
@@ -267,9 +267,9 @@ static func unpack(data: Dictionary) -> Dictionary:
 	if not data.get("skill_ranks") is Dictionary: return _fail("Invalid run skill ranks.")
 	var powers := CrawlProgressionCatalog.fresh_profile()
 	powers.ranks = data.skill_ranks
-	var upgrade_def := CrawlProgressionDefinition.new()
+	var upgrade_def := CrawlContent.economy()
 	for id in data.skill_ranks:
-		if not upgrade_def.rank_costs.has(id) or not CrawlProgressionCatalog.integer(data.skill_ranks[id], 1, 3): return _fail("Invalid run skill upgrade.")
+		if not upgrade_def.rank_costs.has(id) or not CrawlProgressionCatalog.integer(data.skill_ranks[id], 1, upgrade_def.maximum_skill_rank): return _fail("Invalid run skill upgrade.")
 	session.skill_definitions = CrawlProgressionCatalog.skills(powers)
 	if not data.get("result_pending") is bool: return _fail("Invalid result state.")
 	if data.result_pending:

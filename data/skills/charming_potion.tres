@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CrawlCombatSkill" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/CombatSkill.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+display_name = "Charming Potion"
+element = "water"
+id = "charming_potion"
+kind = "group_flee"
+mp_cost = 9
+power = 0
+reach = "ranged"
+status_chance = 35
+status_id = ""
+status_potency = 0
+status_turns = 0
+variance = 0
