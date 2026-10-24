@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "M-07"
+display_name = "Goblin Wizard"
+species = "Goblin"
+subtype_class = "Wizard"
+threat_tier = "Tier 1 - Minion"
+hit_dice_formula = "2d8 + 2"
+min_hp = 4
+max_hp = 18
+avg_hp = 11.0
+base_strength = 2
+base_endurance = 2
+base_wisdom = 5
+base_dexterity = 3
+base_piety = 2
+base_willpower = 3
+magic_amp_base = 2
+spawn_dice_formula = "1d4 + 1"
+min_group_count = 2
+max_group_count = 5
+
+tactical_role = "Cavern pyromancer casting volatile fire sparks"
+skill_id = { "dart": 0.25 }

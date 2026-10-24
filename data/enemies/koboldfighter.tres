@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_ub5wa")
-id = "M-03"
+id = "K-LEGACY"
 display_name = "Kobold Fighter"
 species = "Kobold"
 subtype_class = "Fighter"

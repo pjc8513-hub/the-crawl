@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "M-22"
+display_name = "Dragon Knight"
+species = "Dragon"
+subtype_class = "Knight"
+threat_tier = "Tier 4 - Apex Boss"
+hit_dice_formula = "3d20 + 10"
+min_hp = 13
+max_hp = 70
+avg_hp = 41.5
+base_strength = 5
+base_endurance = 5
+base_wisdom = 2
+base_dexterity = 2
+base_willpower = 4
+ac_bonus = 2
+bonus_damage_base = 2
+spawn_dice_formula = "1d1 + 0"
+min_group_count = 1
+max_group_count = 1
+
+tactical_role = "Armored dragon champion with high cleave swipe"
+skill_id = { "cleave": 0.25 }

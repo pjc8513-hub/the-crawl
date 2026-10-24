@@ -2,7 +2,7 @@ class_name CrawlProgressionCatalog
 extends RefCounted
 
 const STARTING_CLASSES: Array[String] = ["warrior", "cleric", "mage"]
-const ENEMIES: Array[String] = ["koboldfighter", "koboldskeleton", "koboldknight", "koboldwizard", "goblincleric", "goblinninja", "goblinzombie"]
+const ENEMIES: Array[String] = ["koboldfighter", "koboldwizard", "koboldknight", "koboldcleric", "koboldninja", "koboldskeleton", "koboldzombie", "goblinwizard", "goblinknight", "goblincleric", "goblinninja", "goblinskeleton", "goblinzombie", "elementalwizard", "elementalknight", "humanwizard", "humanknight", "humancleric", "humanninja", "humanskeleton", "humanzombie", "dragonwizard", "dragonknight", "dragoncleric", "dragonninja", "dragonskeleton", "dragonzombie", "demonwizard", "demonknight", "demoncleric", "demonninja"]
 
 
 static func enemies() -> Dictionary:

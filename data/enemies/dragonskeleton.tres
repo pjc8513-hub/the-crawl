@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "M-25"
+display_name = "Dragon Skeleton"
+species = "Dragon"
+subtype_class = "Skeleton"
+threat_tier = "Tier 4 - Apex Boss"
+hit_dice_formula = "3d20 + 5"
+min_hp = 8
+max_hp = 65
+avg_hp = 36.5
+base_strength = 3
+base_endurance = 2
+base_wisdom = 1
+base_dexterity = 2
+base_willpower = 2
+spawn_dice_formula = "1d1 + 0"
+min_group_count = 1
+max_group_count = 1
+resist_dark = true
+tactical_role = "Dracolich bone-wyrm with subzero freezing breath"

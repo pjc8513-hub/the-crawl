@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_1ms88")
-id = "M-17"
+id = "M-09"
 display_name = "Goblin Cleric"
 species = "Goblin"
 subtype_class = "Cleric"

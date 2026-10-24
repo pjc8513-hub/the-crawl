@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "M-06"
+display_name = "Kobold Zombie"
+species = "Kobold"
+subtype_class = "Zombie"
+threat_tier = "Tier 1 - Swarm"
+hit_dice_formula = "3d6 + 3"
+min_hp = 6
+max_hp = 21
+avg_hp = 13.5
+base_strength = 3
+base_endurance = 4
+base_wisdom = 1
+base_dexterity = 1
+base_willpower = 3
+spawn_dice_formula = "2d6 + 1"
+min_group_count = 3
+max_group_count = 13
+resist_dark = true
+tactical_role = "Slow decaying reptile corpse with undead fortitude"

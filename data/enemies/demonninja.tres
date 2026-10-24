@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "M-30"
+display_name = "Demon Ninja"
+species = "Demon"
+subtype_class = "Ninja"
+threat_tier = "Tier 3 - Elite"
+hit_dice_formula = "4d12 + 6"
+min_hp = 10
+max_hp = 54
+avg_hp = 32.0
+base_strength = 3
+base_endurance = 3
+base_wisdom = 3
+base_dexterity = 5
+base_piety = 1
+base_willpower = 3
+accuracy_bonus = 2
+initiative_bonus = 3
+bonus_damage_base = 2
+spawn_dice_formula = "1d3 + 1"
+min_group_count = 2
+max_group_count = 4
+
+tactical_role = "Blink-fiend assassin teleporting behind party ranks"
+skill_id = { "poison_strike": 0.25 }

@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "M-16"
+display_name = "Human Knight"
+species = "Human"
+subtype_class = "Knight"
+threat_tier = "Tier 2 - Standard"
+hit_dice_formula = "4d8 + 8"
+min_hp = 12
+max_hp = 40
+avg_hp = 26.0
+base_strength = 5
+base_endurance = 5
+base_wisdom = 2
+base_dexterity = 2
+base_willpower = 4
+ac_bonus = 2
+bonus_damage_base = 2
+spawn_dice_formula = "1d4 + 1"
+min_group_count = 2
+max_group_count = 5
+
+tactical_role = "Steel-clad paladin with defensive shield bash"
+skill_id = { "cleave": 0.25 }

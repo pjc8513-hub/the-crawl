@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3]
+
+[ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "M-19"
+display_name = "Human Skeleton"
+species = "Human"
+subtype_class = "Skeleton"
+threat_tier = "Tier 2 - Swarm"
+hit_dice_formula = "3d8 + 0"
+min_hp = 3
+max_hp = 24
+avg_hp = 13.5
+base_strength = 3
+base_endurance = 2
+base_wisdom = 1
+base_dexterity = 2
+base_willpower = 2
+spawn_dice_formula = "2d6 + 2"
+min_group_count = 4
+max_group_count = 14
+resist_dark = true
+tactical_role = "Armored tomb skeleton wielding rusted halberds"
