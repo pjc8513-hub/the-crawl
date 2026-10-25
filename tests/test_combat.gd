@@ -10,6 +10,7 @@ func _initialize() -> void:
 	_test_reach()
 	_test_rules()
 	_test_statuses()
+	_test_enemy_smoke_bomb()
 	_test_termination()
 	_test_session()
 	_test_action_effects()
@@ -197,6 +198,28 @@ func _test_statuses() -> void:
 	check(enemies.units[0].statuses.has("poison"), "status skill attaches independent state")
 	engine.perform(hero, engine.skills.defend, hero)
 	check(hero.defending, "defend buff active")
+
+
+func _test_enemy_smoke_bomb() -> void:
+	for enemy_path in ["demonninja.tres", "goblincleric.tres"]:
+		var enemy_data: EnemyResource = load("res://data/enemies/" + enemy_path).duplicate(true)
+		enemy_data.skill_id.clear()
+		enemy_data.skill_id[&"smoke_bomb"] = 1.0
+		var enemies := EnemyGroup.new()
+		check(enemies.initialize_group(enemy_data, 2, null, "smoke:" + enemy_path), "enemy with Smoke Bomb initializes: " + enemy_path)
+		var hero := actor("party:smoke-test")
+		var engine := CrawlCombatEngine.new()
+		engine.configure([hero], [enemies], 37)
+		var caster := enemies.units[0]
+		check(caster.known_skills.has("smoke_bomb") and caster.mp >= engine.enemy_skills.smoke_bomb.mp_cost, "enemy has Smoke Bomb and enough MP: " + enemy_path)
+		var action := engine.choose_action(caster)
+		check(action.skill != null and action.skill.id == "smoke_bomb", "enemy AI selects configured Smoke Bomb: " + enemy_path)
+		check(engine.perform(caster, action.skill, action.target, action.reserve, action.rule), "enemy casts Smoke Bomb: " + enemy_path)
+		for ally in enemies.units:
+			check(ally.statuses.has("smoke_bomb"), "Smoke Bomb protects each enemy ally: " + enemy_path)
+		check(not hero.statuses.has("smoke_bomb"), "enemy Smoke Bomb does not affect party: " + enemy_path)
+		var repeated_action := engine.choose_action(caster)
+		check(repeated_action.skill != null and repeated_action.skill.id != "smoke_bomb", "enemy does not waste Smoke Bomb while allies are protected: " + enemy_path)
 
 
 func _test_termination() -> void:

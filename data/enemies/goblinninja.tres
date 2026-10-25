@@ -27,4 +27,7 @@ min_group_count = 3
 max_group_count = 8
 resist_air = true
 resist_dark = true
+skill_id = Dictionary[StringName, float]({
+&"cheap_shot": 0.25
+})
 metadata/_custom_type_script = "uid://c0dneonxyvv6l"

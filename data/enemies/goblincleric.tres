@@ -24,4 +24,8 @@ min_group_count = 2
 max_group_count = 5
 resist_water = true
 resist_spirit = true
+skill_id = Dictionary[StringName, float]({
+&"sleep": 0.1,
+&"smoke_bomb": 0.1
+})
 metadata/_custom_type_script = "uid://c0dneonxyvv6l"

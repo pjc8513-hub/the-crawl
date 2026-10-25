@@ -22,6 +22,7 @@ func initialize_group(data: EnemyResource, rolled_count: int, rng: RandomNumberG
 	id = group_id
 	enemy_data = data
 	position_row = "Back" if data.subtype_class in ["Wizard", "Cleric"] else "Middle" if data.subtype_class == "Ninja" else "Front"
+	var skill_catalog := CrawlCombatContent.skills()
 	for index in range(rolled_count):
 		var unit := CrawlCombatant.new()
 		unit.id = "%s:%03d" % [id, index]
@@ -37,16 +38,28 @@ func initialize_group(data: EnemyResource, rolled_count: int, rng: RandomNumberG
 		unit.armor = maxi(0, floori(data.base_endurance / 2.0))
 		unit.initiative = data.base_dexterity + data.initiative_bonus
 		unit.potions = 0
+		unit.known_skills = ["attack", "defend"]
+		for configured_skill in data.skill_id.keys():
+			var skill_id := str(configured_skill)
+			if not unit.known_skills.has(skill_id):
+				unit.known_skills.append(skill_id)
 		if data.subtype_class == "Wizard":
 			unit.max_mp = 12
 			unit.mp = 12
-			unit.known_skills = ["attack", "dart", "defend"]
+			unit.known_skills.append("dart")
 			unit.tactics = [CrawlCombatContent.rule("cast", "always", 0, "dart", "lowest_hp")]
 		elif data.subtype_class == "Cleric":
 			unit.max_mp = 12
 			unit.mp = 12
-			unit.known_skills = ["attack", "heal", "defend"]
+			unit.known_skills.append("heal")
 			unit.tactics = [CrawlCombatContent.rule("heal", "lowest_ally_hp_percent", 40, "heal", "lowest_hp_percent")]
+		else:
+			for skill_id in unit.known_skills:
+				var skill: CrawlCombatSkill = skill_catalog.get(skill_id)
+				if skill != null and skill.mp_cost > 0:
+					unit.max_mp = 12
+					break
+			unit.mp = unit.max_mp
 		units.append(unit)
 	return true
 

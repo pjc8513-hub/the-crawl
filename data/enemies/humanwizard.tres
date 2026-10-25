@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EnemyResource" format=3]
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://c71abh8e14anp"]
 
 [ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
 
@@ -16,13 +16,14 @@ avg_hp = 16.5
 base_strength = 2
 base_endurance = 2
 base_wisdom = 5
-base_dexterity = 3
 base_piety = 2
 base_willpower = 3
 magic_amp_base = 2
 spawn_dice_formula = "1d3 + 1"
 min_group_count = 2
 max_group_count = 4
-
 tactical_role = "Academy battle-mage casting cone of frost spells"
-skill_id = { "dart": 0.25 }
+skill_id = Dictionary[StringName, float]({
+&"combust": 0.1,
+&"dart": 0.25
+})

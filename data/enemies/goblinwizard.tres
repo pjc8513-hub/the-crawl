@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EnemyResource" format=3]
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://yup2iu1xyja2"]
 
 [ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
 
@@ -16,13 +16,14 @@ avg_hp = 11.0
 base_strength = 2
 base_endurance = 2
 base_wisdom = 5
-base_dexterity = 3
 base_piety = 2
 base_willpower = 3
 magic_amp_base = 2
 spawn_dice_formula = "1d4 + 1"
 min_group_count = 2
 max_group_count = 5
-
 tactical_role = "Cavern pyromancer casting volatile fire sparks"
-skill_id = { "dart": 0.25 }
+skill_id = Dictionary[StringName, float]({
+&"dart": 0.25,
+&"magic_missile": 0.1
+})

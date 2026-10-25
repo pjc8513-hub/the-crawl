@@ -24,4 +24,7 @@ spawn_dice_formula = "1d6 +2"
 min_group_count = 3
 max_group_count = 8
 resist_physical = true
+skill_id = Dictionary[StringName, float]({
+&"defend": 0.1
+})
 metadata/_custom_type_script = "uid://c0dneonxyvv6l"

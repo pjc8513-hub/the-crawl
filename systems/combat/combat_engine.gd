@@ -184,6 +184,11 @@ func eligible_targets(actor: CrawlCombatant, skill: CrawlCombatSkill) -> Array[C
 		return result
 	if skill.kind in ["potion", "defend", "group_armor"]:
 		if skill.kind in ["defend", "group_armor"] or actor.hp < actor.max_hp:
+			if skill.kind == "group_armor":
+				for ally in _living(actor.side):
+					if not ally.statuses.has("smoke_bomb"):
+						return [actor]
+				return result
 			result.append(actor)
 		return result
 	var healing := skill.kind == "heal"
@@ -283,6 +288,20 @@ func _cost(actor: CrawlCombatant, skill: CrawlCombatSkill) -> int:
 
 
 func choose_action(actor: CrawlCombatant) -> Dictionary:
+	if actor.side == "enemy" and actor.enemy_data != null:
+		var configured_skills: Array = actor.enemy_data.skill_id.keys()
+		configured_skills.sort()
+		for configured_skill in configured_skills:
+			var skill_id := str(configured_skill)
+			var skill: CrawlCombatSkill = enemy_skills.get(skill_id)
+			if not _payable(actor, skill, 0):
+				continue
+			var chance := clampf(float(actor.enemy_data.skill_id[configured_skill]), 0.0, 1.0)
+			if chance <= 0.0 or rng.randf() >= chance:
+				continue
+			var target := _select(eligible_targets(actor, skill), "lowest_hp", actor)
+			if target != null:
+				return {"skill": skill, "target": target, "reserve": 0, "rule": "enemy_skill"}
 	for rule in actor.tactics:
 		var inspection := inspect_rule(actor, rule)
 		if inspection.reason != "":
@@ -368,7 +387,7 @@ func perform(actor: CrawlCombatant, skill: CrawlCombatSkill, target: CrawlCombat
 	elif skill.kind == "group_armor":
 		for ally in _living(actor.side):
 			ally.statuses["smoke_bomb"] = {"turns": skill.status_turns, "potency": skill.power, "source": actor.id}
-		_emit("status", {"actor": actor.id, "target": actor.id, "status": "smoke_bomb", "turns": skill.status_turns})
+			_emit("status", {"actor": actor.id, "target": ally.id, "status": "smoke_bomb", "turns": skill.status_turns})
 	elif skill.kind in ["heal", "potion"]:
 		var amount := skill.power + (actor.magic if skill.kind == "heal" else 0)
 		var healed := mini(target.max_hp - target.hp, maxi(0, amount))

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EnemyResource" format=3]
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://bae4qwohkhupy"]
 
 [ext_resource type="Script" uid="uid://c0dneonxyvv6l" path="res://resources/EnemyResource.gd" id="1_enemy"]
 
@@ -13,9 +13,6 @@ hit_dice_formula = "3d8 + 6"
 min_hp = 9
 max_hp = 30
 avg_hp = 19.5
-base_strength = 3
-base_endurance = 3
-base_wisdom = 3
 base_dexterity = 5
 base_piety = 1
 base_willpower = 3
@@ -25,6 +22,8 @@ bonus_damage_base = 2
 spawn_dice_formula = "1d4 + 1"
 min_group_count = 2
 max_group_count = 5
-
 tactical_role = "Shinobi assassin using flash bombs and evasion"
-skill_id = { "poison_strike": 0.25 }
+skill_id = Dictionary[StringName, float]({
+&"poison_strike": 0.25,
+&"smoke_bomb": 0.1
+})

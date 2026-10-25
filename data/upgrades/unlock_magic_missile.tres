@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="CrawlUpgradeDefinition" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="CrawlUpgradeDefinition" format=3 uid="uid://d3ap2k1ay1bn3"]
 
-[ext_resource type="Script" path="res://resources/UpgradeDefinition.gd" id="script"]
 [ext_resource type="Resource" path="res://data/classes/mage.tres" id="class"]
+[ext_resource type="Script" uid="uid://8ekwnv7a8rmb" path="res://resources/UpgradeDefinition.gd" id="script"]
 [ext_resource type="Resource" path="res://data/skills/magic_missile.tres" id="skill"]
-[ext_resource type="Script" path="res://resources/TacticRule.gd" id="tactic_type"]
+[ext_resource type="Script" uid="uid://mee3pporcjpe" path="res://resources/TacticRule.gd" id="tactic_type"]
 
 [sub_resource type="Resource" id="default_tactic"]
 script = ExtResource("tactic_type")
@@ -12,11 +12,9 @@ metric = "enemy_group_count"
 comparator = "at_least"
 threshold = 1.0
 skill_id = "magic_missile"
-selector = "lowest_hp"
 
 [resource]
 script = ExtResource("script")
-kind = "skill"
 class_definition = ExtResource("class")
 skill = ExtResource("skill")
 cost = 80
