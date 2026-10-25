@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CrawlCombatSkill" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/CombatSkill.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+display_name = "Heroism"
+element = "spirit"
+id = "heroism"
+kind = "heroism"
+mp_cost = 6
+power = 3
+reach = "ranged"
+status_chance = 100
+status_id = ""
+status_potency = 3
+status_turns = 3
+variance = 0

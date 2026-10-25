@@ -16,6 +16,10 @@ func purchase_id() -> String:
 
 
 func rank_summary() -> String:
+	match skill.id if skill != null else "":
+		"divine_intervention": return "+%d round per rank" % power_per_rank
+		"resurrect": return "+%d%% HP restored per rank" % power_per_rank
+		"group_heal": return "+%d HP healed per rank" % power_per_rank
 	if status_chance_per_rank == 0:
 		return "+%d power per rank" % power_per_rank
 	var result := "+%d%% effect chance per rank" % status_chance_per_rank

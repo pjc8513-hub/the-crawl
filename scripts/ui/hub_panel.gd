@@ -10,6 +10,9 @@ var body: VBoxContainer
 var selectors: Array[OptionButton] = []
 var progression: CrawlProgressionController
 var upgrades_heading: Label
+var skill_class_selector: OptionButton
+var skill_rows: VBoxContainer
+var selected_skill_class: String = ""
 
 
 func _ready() -> void:
@@ -29,6 +32,7 @@ func selections() -> Array:
 
 func bind(controller: CrawlProgressionController) -> void:
 	var chosen := selections()
+	var previous_scroll := scroll_vertical
 	progression = controller
 	selectors.clear()
 	for child in body.get_children():
@@ -73,20 +77,91 @@ func bind(controller: CrawlProgressionController) -> void:
 	_row("Party capacity · %d / %d" % [int(profile.party_slots), controller.economy.maximum_slots], "slot", "")
 	for class_id in controller.economy.class_costs:
 		_row("Unlock " + CrawlContent.classes()[class_id].display_name, "class", class_id)
-	var skills := CrawlCombatContent.skills()
-	for skill_id in controller.economy.skill_unlocks:
-		var owner: String = controller.economy.skill_unlocks[skill_id]["class"]
-		_row("Unlock %s · %s" % [skills[skill_id].display_name, CrawlContent.classes()[owner].display_name], "skill", skill_id)
-	for upgrade in controller.economy.upgrades:
-		if upgrade.kind != "rank":
+	CrawlGameTheme.label(body, "CLASS SKILLS", true)
+	var class_picker := HBoxContainer.new()
+	body.add_child(class_picker)
+	CrawlGameTheme.label(class_picker, "Choose class")
+	skill_class_selector = OptionButton.new()
+	skill_class_selector.custom_minimum_size.x = 220
+	class_picker.add_child(skill_class_selector)
+	if not profile.classes.has(selected_skill_class):
+		selected_skill_class = str(profile.classes[0])
+	for definition in CrawlContent.CATALOG.classes:
+		if not profile.classes.has(definition.id):
 			continue
-		var skill_id := upgrade.skill.id
-		_row("%s · rank %d / %d · %s" % [upgrade.skill.display_name, int(profile.ranks.get(skill_id, 0)), controller.economy.maximum_skill_rank, upgrade.rank_summary()], "rank", skill_id)
+		skill_class_selector.add_item(definition.display_name)
+		skill_class_selector.set_item_metadata(skill_class_selector.item_count - 1, definition.id)
+		if definition.id == selected_skill_class:
+			skill_class_selector.select(skill_class_selector.item_count - 1)
+	skill_class_selector.item_selected.connect(func(index: int) -> void:
+		selected_skill_class = str(skill_class_selector.get_item_metadata(index))
+		_show_skill_rows()
+	)
+	skill_rows = VBoxContainer.new()
+	skill_rows.add_theme_constant_override("separation", 8)
+	body.add_child(skill_rows)
+	_show_skill_rows()
+	call_deferred("_restore_scroll", previous_scroll)
 
 
-func _row(label_text: String, kind: String, id: String) -> void:
+func _restore_scroll(value: int) -> void:
+	scroll_vertical = value
+
+
+func _show_skill_rows() -> void:
+	for child in skill_rows.get_children():
+		skill_rows.remove_child(child)
+		child.queue_free()
+	var class_definition: CrawlClassDefinition = CrawlContent.classes().get(selected_skill_class)
+	if class_definition == null:
+		return
+	var records: Array[Dictionary] = []
+	var seen: Dictionary = {}
+	for upgrade in progression.economy.upgrades:
+		if upgrade.kind not in ["skill", "rank"]:
+			continue
+		var skill_id: String = upgrade.skill.id
+		var belongs := false
+		if progression.economy.skill_unlocks.has(skill_id):
+			belongs = progression.economy.skill_unlocks[skill_id]["class"] == selected_skill_class
+		else:
+			belongs = class_definition.skill_ids().has(skill_id)
+		if not belongs or seen.has(skill_id):
+			continue
+		seen[skill_id] = true
+		records.append({"id": skill_id, "name": upgrade.skill.display_name, "maxed": _skill_maxed(skill_id)})
+	records.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		if a.maxed != b.maxed:
+			return not a.maxed
+		return str(a.name).to_lower() < str(b.name).to_lower()
+	)
+	for record in records:
+		var skill_id: String = record.id
+		if progression.economy.skill_unlocks.has(skill_id) and not progression.profile.skills.has(skill_id):
+			_row("%s · Locked" % record.name, "skill", skill_id, skill_rows)
+		elif progression.economy.rank_costs.has(skill_id):
+			var rank := int(progression.profile.ranks.get(skill_id, 0))
+			var summary := ""
+			for upgrade in progression.economy.upgrades:
+				if upgrade.kind == "rank" and upgrade.skill.id == skill_id:
+					summary = upgrade.rank_summary()
+					break
+			_row("%s · rank %d / %d · %s" % [record.name, rank, progression.economy.maximum_skill_rank, summary], "rank", skill_id, skill_rows)
+		else:
+			_row("%s · Unlocked" % record.name, "skill", skill_id, skill_rows)
+
+
+func _skill_maxed(skill_id: String) -> bool:
+	if progression.economy.skill_unlocks.has(skill_id) and not progression.profile.skills.has(skill_id):
+		return false
+	if progression.economy.rank_costs.has(skill_id):
+		return int(progression.profile.ranks.get(skill_id, 0)) >= progression.economy.maximum_skill_rank
+	return true
+
+
+func _row(label_text: String, kind: String, id: String, parent: Node = null) -> void:
 	var row := HBoxContainer.new()
-	body.add_child(row)
+	(parent if parent != null else body).add_child(row)
 	var label := CrawlGameTheme.label(row, label_text)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL

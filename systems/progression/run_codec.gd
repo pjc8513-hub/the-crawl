@@ -52,7 +52,7 @@ static func _actor_error(data: Variant) -> String:
 	if not CrawlProgressionCatalog.integer(data.get("battle_armor", 0), 0, 1000) or not CrawlProgressionCatalog.integer(data.get("bloodlust_bonus", 0), 0, 1000): return "Invalid combat bonuses."
 	if not data.get("known_skills") is Array or data.known_skills.size() > CrawlContent.CATALOG.skills.size(): return "Invalid learned skills."
 	for id in data.known_skills:
-		if not id is String or not CrawlCombatContent.skills().has(id): return "Unknown learned skill."
+		if not id is String or not CrawlContent.skills().has(id): return "Unknown learned skill."
 	if CrawlProgressionCatalog.rules_error(data.get("tactics")) != "": return "Invalid saved tactics."
 	if not data.get("statuses") is Dictionary or data.statuses.size() > 32: return "Invalid statuses."
 	for id in data.statuses:
@@ -314,12 +314,14 @@ static func _restore_combat(data: Variant, session: CrawlEncounterSession, enemi
 	engine.round_index = int(data.round)
 	engine.events.clear()
 	for event in data.events:
-		if not event is Dictionary or event.get("type") not in ["round", "action", "damage", "heal", "defeat", "flee", "status", "skip", "status_expired", "passive", "block", "complete"] or not CrawlProgressionCatalog.integer(event.get("id"), 0, 1000000) or not CrawlProgressionCatalog.integer(event.get("round"), 0, 100): return "Invalid saved combat event."
+		if not event is Dictionary or event.get("type") not in ["round", "action", "damage", "heal", "balance", "resurrect", "defeat", "flee", "status", "skip", "status_expired", "passive", "block", "critical", "complete"] or not CrawlProgressionCatalog.integer(event.get("id"), 0, 1000000) or not CrawlProgressionCatalog.integer(event.get("round"), 0, 100): return "Invalid saved combat event."
 		var type: String = event.type
-		if type in ["action", "damage", "heal", "defeat", "flee", "status", "skip", "passive", "block"] and (not event.get("actor") is String or (not ids.has(event.actor) and event.actor != "status:poison")): return "Unknown event source."
-		if type in ["action", "damage", "heal", "defeat", "flee", "status", "status_expired", "block"] and not ids.has(event.get("target")): return "Unknown event target."
+		if type in ["action", "damage", "heal", "balance", "resurrect", "defeat", "flee", "status", "skip", "passive", "block", "critical"] and (not event.get("actor") is String or (not ids.has(event.actor) and event.actor != "status:poison")): return "Unknown event source."
+		if type in ["action", "damage", "heal", "balance", "resurrect", "defeat", "flee", "status", "status_expired", "block", "critical"] and not ids.has(event.get("target")): return "Unknown event target."
 		if type == "action" and not engine.skills.has(event.get("skill")): return "Unknown event skill."
 		if type in ["damage", "heal"] and (not CrawlProgressionCatalog.integer(event.get("amount"), 0, 100000) or not CrawlProgressionCatalog.integer(event.get("hp"), 0, 100000)): return "Invalid event amount."
+		if type in ["balance", "resurrect"] and not CrawlProgressionCatalog.integer(event.get("hp"), 1, 100000): return "Invalid health event."
+		if type == "resurrect" and not CrawlProgressionCatalog.integer(event.get("max_hp"), 1, 100000): return "Invalid resurrection event."
 		if type in ["status", "status_expired"] and not event.get("status") is String: return "Invalid status event."
 		if type == "status" and not CrawlProgressionCatalog.integer(event.get("turns"), 1, 100): return "Invalid status duration."
 		if type == "skip" and not event.get("reason") is String: return "Invalid skipped turn."

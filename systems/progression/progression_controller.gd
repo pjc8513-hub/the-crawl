@@ -67,6 +67,7 @@ func initialize(directory: String = "user://progression") -> bool:
 		notice += decoded.reason
 		return false
 	active = decoded.flow
+	active.session.banked_gold = int(profile.gold)
 	active_definition = decoded.definition
 	run_skill_ranks = decoded.skill_ranks
 	if active.session.party.size() != int(profile.party_slots):
@@ -167,6 +168,7 @@ func start_run(definition: FloorDefinition, seed_value: int, classes: Array) -> 
 	session.floor_state = CrawlFloorGenerator.new().generate(definition, seed_value)
 	session.party = CrawlProgressionCatalog.party(profile, classes)
 	session.skill_definitions = CrawlProgressionCatalog.skills(profile)
+	session.banked_gold = int(profile.gold)
 	active = CrawlRoomFlow.new()
 	active.session = session
 	active.run_id = run_id

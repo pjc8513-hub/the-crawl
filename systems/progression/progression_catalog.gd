@@ -90,7 +90,7 @@ static func rules_error(value: Variant) -> String:
 	if not value is Array or value.size() > 32:
 		return "Invalid tactic list."
 	for data in value:
-		if not data is Dictionary or data.size() != 9 or not data.get("id") is String or data.id.length() > 100 or not data.get("enabled") is bool or data.get("metric") not in ["always", "self_hp_percent", "self_hp", "lowest_ally_hp_percent", "lowest_ally_hp", "self_mp_percent", "enemy_group_count"] or data.get("comparator") not in ["below", "above", "at_most", "at_least"] or not integer(data.get("reserve_mp"), 0, 999) or not integer(data.get("min_group_count"), 0, 100) or data.get("skill_id") not in CrawlCombatContent.skills() or data.get("selector") not in ["self", "lowest_hp", "highest_hp", "lowest_hp_percent", "backline", "highest_count"]:
+		if not data is Dictionary or data.size() != 9 or not data.get("id") is String or data.id.length() > 100 or not data.get("enabled") is bool or data.get("metric") not in ["always", "self_hp_percent", "self_hp", "lowest_ally_hp_percent", "lowest_ally_hp", "self_mp_percent", "enemy_group_count"] or data.get("comparator") not in ["below", "above", "at_most", "at_least"] or not integer(data.get("reserve_mp"), 0, 999) or not integer(data.get("min_group_count"), 0, 100) or data.get("skill_id") not in CrawlContent.skills() or data.get("selector") not in ["self", "lowest_hp", "highest_hp", "lowest_hp_percent", "backline", "highest_count"]:
 			return "Invalid tactic rule."
 		if not (data.get("threshold") is int or data.get("threshold") is float) or not is_finite(float(data.threshold)) or data.threshold < 0 or data.threshold > 9999:
 			return "Invalid tactic threshold."

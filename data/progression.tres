@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CrawlProgressionDefinition" load_steps=38 format=3]
+[gd_resource type="Resource" script_class="CrawlProgressionDefinition" load_steps=53 format=3]
 
 [ext_resource type="Script" path="res://resources/ProgressionDefinition.gd" id="script"]
 [ext_resource type="Script" path="res://resources/ClassDefinition.gd" id="class_type"]
@@ -37,6 +37,21 @@
 [ext_resource type="Resource" path="res://data/upgrades/rank_poison_strike.tres" id="upgrade_28"]
 [ext_resource type="Resource" path="res://data/upgrades/rank_sleep.tres" id="upgrade_29"]
 [ext_resource type="Resource" path="res://data/upgrades/rank_stun_strike.tres" id="upgrade_30"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_hoarder.tres" id="upgrade_31"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_smoke_bomb.tres" id="upgrade_32"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_cheap_shot.tres" id="upgrade_33"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_charm.tres" id="upgrade_34"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_battle_tempo.tres" id="upgrade_35"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_weak_spot.tres" id="upgrade_36"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_divine_intervention.tres" id="upgrade_37"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_balance_life.tres" id="upgrade_38"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_resurrect.tres" id="upgrade_39"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_cleanse.tres" id="upgrade_40"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_heroism.tres" id="upgrade_41"]
+[ext_resource type="Resource" path="res://data/upgrades/unlock_group_heal.tres" id="upgrade_42"]
+[ext_resource type="Resource" path="res://data/upgrades/rank_divine_intervention.tres" id="upgrade_43"]
+[ext_resource type="Resource" path="res://data/upgrades/rank_resurrect.tres" id="upgrade_44"]
+[ext_resource type="Resource" path="res://data/upgrades/rank_group_heal.tres" id="upgrade_45"]
 
 [resource]
 script = ExtResource("script")
@@ -44,4 +59,4 @@ starting_party = Array[ExtResource("class_type")]([ExtResource("warrior"), ExtRe
 maximum_slots = 6
 slot_costs = Array[int]([150,350,700])
 maximum_skill_rank = 3
-upgrades = Array[ExtResource("upgrade_type")]([ExtResource("upgrade_0"), ExtResource("upgrade_1"), ExtResource("upgrade_2"), ExtResource("upgrade_3"), ExtResource("upgrade_4"), ExtResource("upgrade_5"), ExtResource("upgrade_6"), ExtResource("upgrade_7"), ExtResource("upgrade_8"), ExtResource("upgrade_9"), ExtResource("upgrade_10"), ExtResource("upgrade_11"), ExtResource("upgrade_12"), ExtResource("upgrade_13"), ExtResource("upgrade_14"), ExtResource("upgrade_15"), ExtResource("upgrade_16"), ExtResource("upgrade_17"), ExtResource("upgrade_18"), ExtResource("upgrade_19"), ExtResource("upgrade_20"), ExtResource("upgrade_21"), ExtResource("upgrade_22"), ExtResource("upgrade_23"), ExtResource("upgrade_24"), ExtResource("upgrade_25"), ExtResource("upgrade_26"), ExtResource("upgrade_27"), ExtResource("upgrade_28"), ExtResource("upgrade_29"), ExtResource("upgrade_30")])
+upgrades = Array[ExtResource("upgrade_type")]([ExtResource("upgrade_0"), ExtResource("upgrade_1"), ExtResource("upgrade_2"), ExtResource("upgrade_3"), ExtResource("upgrade_4"), ExtResource("upgrade_5"), ExtResource("upgrade_6"), ExtResource("upgrade_7"), ExtResource("upgrade_8"), ExtResource("upgrade_9"), ExtResource("upgrade_10"), ExtResource("upgrade_11"), ExtResource("upgrade_12"), ExtResource("upgrade_13"), ExtResource("upgrade_14"), ExtResource("upgrade_15"), ExtResource("upgrade_16"), ExtResource("upgrade_17"), ExtResource("upgrade_18"), ExtResource("upgrade_19"), ExtResource("upgrade_20"), ExtResource("upgrade_21"), ExtResource("upgrade_22"), ExtResource("upgrade_23"), ExtResource("upgrade_24"), ExtResource("upgrade_25"), ExtResource("upgrade_26"), ExtResource("upgrade_27"), ExtResource("upgrade_28"), ExtResource("upgrade_29"), ExtResource("upgrade_30"), ExtResource("upgrade_31"), ExtResource("upgrade_32"), ExtResource("upgrade_33"), ExtResource("upgrade_34"), ExtResource("upgrade_35"), ExtResource("upgrade_36"), ExtResource("upgrade_37"), ExtResource("upgrade_38"), ExtResource("upgrade_39"), ExtResource("upgrade_40"), ExtResource("upgrade_41"), ExtResource("upgrade_42"), ExtResource("upgrade_43"), ExtResource("upgrade_44"), ExtResource("upgrade_45")])

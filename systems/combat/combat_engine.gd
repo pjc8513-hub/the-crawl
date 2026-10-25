@@ -3,6 +3,7 @@ extends RefCounted
 ## One step = one actor opportunity. No timers, nodes, UI, or direct commands.
 
 const ROWS: Dictionary = {"Front": 0, "Middle": 1, "Back": 2}
+const DEBUFFS: Array[String] = ["poison", "burn", "stun", "sleep", "frozen", "fear"]
 var actors: Array[CrawlCombatant] = []
 var party: Array[CrawlCombatant] = []
 var groups: Array[EnemyGroup] = []
@@ -14,16 +15,18 @@ var round_limit: int = 100
 var outcome: String = "ongoing"
 var rng := RandomNumberGenerator.new()
 var queue: Array[CrawlCombatant] = []
+var current_gold: int = 0
 
 
-func configure(party_members: Array[CrawlCombatant], enemy_groups: Array[EnemyGroup], seed_value: int, skill_definitions: Dictionary = {}, start_effects: bool = true) -> void:
+func configure(party_members: Array[CrawlCombatant], enemy_groups: Array[EnemyGroup], seed_value: int, skill_definitions: Dictionary = {}, start_effects: bool = true, gold_on_hand: int = 0) -> void:
 	party = party_members.duplicate()
 	groups = enemy_groups.duplicate()
 	actors = party.duplicate()
 	for group in groups:
 		actors.append_array(group.units)
-	skills = CrawlCombatContent.skills() if skill_definitions.is_empty() else skill_definitions
-	enemy_skills = CrawlCombatContent.skills()
+	skills = CrawlContent.skills() if skill_definitions.is_empty() else skill_definitions
+	current_gold = maxi(0, gold_on_hand)
+	enemy_skills = CrawlContent.skills()
 	rng.seed = seed_value
 	events.clear()
 	queue.clear()
@@ -113,7 +116,7 @@ func step() -> void:
 		for actor in actors:
 			if actor.alive():
 				queue.append(actor)
-		queue.sort_custom(func(a: CrawlCombatant, b: CrawlCombatant) -> bool: return a.initiative > b.initiative if a.initiative != b.initiative else a.id < b.id)
+		queue.sort_custom(func(a: CrawlCombatant, b: CrawlCombatant) -> bool: return _initiative(a) > _initiative(b) if _initiative(a) != _initiative(b) else a.id < b.id)
 		_emit("round")
 	var actor: CrawlCombatant = queue.pop_front()
 	if not actor.alive():
@@ -151,8 +154,36 @@ func step() -> void:
 
 func eligible_targets(actor: CrawlCombatant, skill: CrawlCombatSkill) -> Array[CrawlCombatant]:
 	var result: Array[CrawlCombatant] = []
-	if skill.kind in ["potion", "defend"]:
-		if skill.kind == "defend" or actor.hp < actor.max_hp:
+	if skill.kind in ["party_heal", "divine_intervention", "balance_life"]:
+		if actor.side != "party":
+			return result
+		var allies := _living("party")
+		if allies.is_empty():
+			return result
+		if skill.kind == "balance_life":
+			var first_hp := allies[0].hp
+			for ally in allies:
+				if ally.hp != first_hp:
+					return [actor]
+			return result
+		return [actor]
+	if skill.kind == "resurrect":
+		for ally in party:
+			if ally.side == "party" and ally.hp <= 0 and not ally.fled:
+				result.append(ally)
+		return result
+	if skill.kind == "cleanse":
+		for ally in _living("party"):
+			if _has_debuff(ally):
+				result.append(ally)
+		return result
+	if skill.kind == "heroism":
+		for ally in _living("party"):
+			if not ally.statuses.has("heroism"):
+				result.append(ally)
+		return result
+	if skill.kind in ["potion", "defend", "group_armor"]:
+		if skill.kind in ["defend", "group_armor"] or actor.hp < actor.max_hp:
 			result.append(actor)
 		return result
 	var healing := skill.kind == "heal"
@@ -162,6 +193,8 @@ func eligible_targets(actor: CrawlCombatant, skill: CrawlCombatSkill) -> Array[C
 	for target in living:
 		nearest = mini(nearest, ROWS[target.row])
 	for target in living:
+		if skill.kind == "group_flee" and target.enemy_data != null and not target.enemy_data.can_flee:
+			continue
 		if healing:
 			if target.hp < target.max_hp:
 				result.append(target)
@@ -305,11 +338,47 @@ func perform(actor: CrawlCombatant, skill: CrawlCombatSkill, target: CrawlCombat
 	_emit("action", {"actor": actor.id, "target": target.id, "skill": skill.id, "rule": rule_id, "mp_cost": cost, "mp": actor.mp, "potions": actor.potions})
 	if skill.kind == "defend":
 		actor.defending = true
+	elif skill.kind == "divine_intervention":
+		for ally in _living("party"):
+			ally.statuses["divine_intervention"] = {"turns": skill.power, "potency": 1, "source": actor.id}
+			_emit("status", {"actor": actor.id, "target": ally.id, "status": "divine_intervention", "turns": skill.power})
+	elif skill.kind == "balance_life":
+		var allies := _living("party")
+		allies.sort_custom(func(a: CrawlCombatant, b: CrawlCombatant) -> bool: return a.id < b.id)
+		var total_hp := 0
+		for ally in allies:
+			total_hp += ally.hp
+		var shared_hp := floori(float(total_hp) / allies.size())
+		var remainder := total_hp - shared_hp * allies.size()
+		for index in range(allies.size()):
+			allies[index].hp = shared_hp + (1 if index < remainder else 0)
+			_emit("balance", {"actor": actor.id, "target": allies[index].id, "hp": allies[index].hp})
+	elif skill.kind == "resurrect":
+		target.hp = maxi(1, ceili(target.max_hp * skill.power / 100.0))
+		_emit("resurrect", {"actor": actor.id, "target": target.id, "hp": target.hp, "max_hp": target.max_hp})
+	elif skill.kind == "cleanse":
+		for debuff in DEBUFFS:
+			if target.statuses.has(debuff):
+				target.statuses.erase(debuff)
+				_emit("status_expired", {"target": target.id, "status": debuff})
+		target.freeze_thaw_penalty = 0
+	elif skill.kind == "heroism":
+		target.statuses["heroism"] = {"turns": skill.status_turns, "potency": skill.power, "source": actor.id}
+		_emit("status", {"actor": actor.id, "target": target.id, "status": "heroism", "turns": skill.status_turns})
+	elif skill.kind == "group_armor":
+		for ally in _living(actor.side):
+			ally.statuses["smoke_bomb"] = {"turns": skill.status_turns, "potency": skill.power, "source": actor.id}
+		_emit("status", {"actor": actor.id, "target": actor.id, "status": "smoke_bomb", "turns": skill.status_turns})
 	elif skill.kind in ["heal", "potion"]:
 		var amount := skill.power + (actor.magic if skill.kind == "heal" else 0)
 		var healed := mini(target.max_hp - target.hp, maxi(0, amount))
 		target.hp += healed
 		_emit("heal", {"actor": actor.id, "target": target.id, "amount": healed, "hp": target.hp})
+	elif skill.kind == "party_heal":
+		for ally in _living("party"):
+			var healed := mini(ally.max_hp - ally.hp, maxi(0, skill.power))
+			ally.hp += healed
+			_emit("heal", {"actor": actor.id, "target": ally.id, "amount": healed, "hp": ally.hp})
 	else:
 		var targets: Array[CrawlCombatant] = [target]
 		if skill.kind in ["group_damage", "group_status", "group_flee", "cleave"]:
@@ -342,9 +411,22 @@ func perform(actor: CrawlCombatant, skill: CrawlCombatSkill, target: CrawlCombat
 
 
 func _power(actor: CrawlCombatant, skill: CrawlCombatSkill, target: CrawlCombatant) -> int:
-	var value := skill.power + (actor.attack if skill.element == "physical" else actor.magic) + rng.randi_range(0, skill.variance)
+	var heroism_bonus := int(actor.statuses.get("heroism", {}).get("potency", 0))
+	var base_stat := actor.attack if skill.element == "physical" else actor.magic
+	var value := skill.power + base_stat + heroism_bonus + rng.randi_range(0, skill.variance)
 	if skill.element == "physical":
 		value += actor.bloodlust_bonus
+		if actor.known_skills.has("hoarder"):
+			value += floori(float(current_gold) / maxi(1, skills["hoarder"].power))
+		if actor.known_skills.has("cheap_shot") and not target.statuses.is_empty():
+			value = ceili(value * (100 + int(skills["cheap_shot"].power)) / 100.0)
+		var critical_chance := 0
+		if actor.known_skills.has("battle_tempo"):
+			critical_chance += actor.battle_kills * int(skills["battle_tempo"].power)
+		if critical_chance > 0 and rng.randi_range(1, 100) <= mini(100, critical_chance):
+			var multiplier := 150 + (int(skills["weak_spot"].power) if actor.known_skills.has("weak_spot") else 0)
+			value = ceili(value * multiplier / 100.0)
+			_emit("critical", {"actor": actor.id, "target": target.id, "skill": skill.id, "chance": mini(100, critical_chance), "multiplier": multiplier})
 		if actor.known_skills.has("berserk"):
 			value += mini(int(skills["berserk"].power), (actor.max_hp - actor.hp) / 10)
 		if actor.known_skills.has("giant_slayer") and target.hp > actor.hp:
@@ -366,7 +448,9 @@ func _aegis_blocks(target: CrawlCombatant) -> bool:
 
 
 func _mitigated(target: CrawlCombatant, skill: CrawlCombatSkill, raw: int) -> int:
-	var value := maxi(0, raw - (target.armor + target.battle_armor if skill.element == "physical" else 0))
+	var smoke_armor := int(target.statuses.get("smoke_bomb", {}).get("potency", 0))
+	var heroism_armor := int(target.statuses.get("heroism", {}).get("potency", 0))
+	var value := maxi(0, raw - (target.armor + target.battle_armor + smoke_armor + heroism_armor if skill.element == "physical" else 0))
 	if target.defending:
 		value = floori(value / 2.0)
 	if _resists(target, skill.element):
@@ -385,11 +469,17 @@ func _damage(target: CrawlCombatant, amount: int, source: String, skill_id: Stri
 		_emit("status_expired", {"target": target.id, "status": "sleep"})
 	if target.statuses.has("burn") and amount > 0 and skill_id != "burn":
 		amount = floori(amount * 1.2)
-	var dealt := mini(target.hp, maxi(0, amount))
+	var damage_cap := maxi(0, target.hp - 1) if target.hp > 0 and target.statuses.has("divine_intervention") else target.hp
+	var dealt := mini(damage_cap, maxi(0, amount))
 	target.hp -= dealt
 	_emit("damage", {"actor": source, "target": target.id, "skill": skill_id, "amount": dealt, "hp": target.hp})
 	if not target.alive():
 		_emit("defeat", {"actor": source, "target": target.id})
+		for killer in party:
+			if killer.id == source and killer.known_skills.has("battle_tempo"):
+				killer.battle_kills += 1
+				_emit("passive", {"actor": killer.id, "skill": "battle_tempo", "amount": killer.battle_kills * int(skills["battle_tempo"].power)})
+				break
 		if target.side == "enemy" and _source_is_party(source):
 			for warrior in _living("party"):
 				if warrior.known_skills.has("blood_lust"):
@@ -403,3 +493,16 @@ func _source_is_party(source: String) -> bool:
 		if actor.id == source:
 			return true
 	return false
+
+
+func _has_debuff(actor: CrawlCombatant) -> bool:
+	if actor.freeze_thaw_penalty > 0:
+		return true
+	for debuff in DEBUFFS:
+		if actor.statuses.has(debuff):
+			return true
+	return false
+
+
+func _initiative(actor: CrawlCombatant) -> int:
+	return actor.initiative + int(actor.statuses.get("heroism", {}).get("potency", 0))

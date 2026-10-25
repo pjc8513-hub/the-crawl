@@ -7,6 +7,7 @@ var party: Array[CrawlCombatant] = []
 var combat: CrawlCombatEngine
 var result_pending: bool = false
 var run_gold: int = 0
+var banked_gold: int = 0
 var error_message: String = ""
 var skill_definitions: Dictionary = {} # Party upgrades; enemy skill definitions stay unmodified.
 var claimed_rewards: Dictionary = {} # Stable encounter IDs, persisted with room state.
@@ -45,8 +46,9 @@ func begin() -> bool:
 		actor.defending = false
 		actor.battle_armor = 0
 		actor.bloodlust_bonus = 0
+		actor.battle_kills = 0
 	combat = CrawlCombatEngine.new()
-	combat.configure(party, enemy_groups, seed_value, skill_definitions)
+	combat.configure(party, enemy_groups, seed_value, skill_definitions, true, banked_gold + run_gold)
 	floor_state.travel_block_reason = "Combat is in progress."
 	_sync_result()
 	return true

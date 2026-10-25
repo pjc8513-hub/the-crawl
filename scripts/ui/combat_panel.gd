@@ -185,7 +185,10 @@ func _format_event(event: Dictionary) -> String:
 		"round": return "— Round %d —" % event.round
 		"action": return "%s: %s → %s" % [source, engine.skills[event.skill].display_name, target]
 		"damage": return "  %s takes %d damage (%d HP)." % [target, event.amount, event.hp]
+		"critical": return "  Critical hit on %s! %d%% damage." % [target, event.multiplier]
 		"heal": return "  %s recovers %d HP." % [target, event.amount]
+		"resurrect": return "  %s returns with %d / %d HP." % [target, event.hp, event.max_hp]
+		"balance": return "  %s is balanced to %d HP." % [target, event.hp]
 		"defeat": return "  %s falls." % target
 		"block": return "  %s blocks a hit on %s." % [source, target]
 		"passive": return "  %s: %s bonus %d." % [source, event.skill.replace("_", " ").capitalize(), event.amount]

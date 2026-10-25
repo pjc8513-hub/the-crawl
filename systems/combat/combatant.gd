@@ -27,6 +27,7 @@ var meditation_percent: int = 0
 var focus_percent: int = 0
 var battle_armor: int = 0
 var bloodlust_bonus: int = 0
+var battle_kills: int = 0
 var enemy_data: EnemyResource
 var equipment: Dictionary = {} # Slot -> immutable ItemDefinition; inventory owns instances.
 

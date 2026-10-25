@@ -59,7 +59,7 @@ func _build_rule(actor: CrawlCombatant, index: int) -> void:
 	row.add_child(enabled)
 	var active_skills: Array[String] = []
 	for skill_id in actor.known_skills:
-		if CrawlCombatContent.skills()[skill_id].kind != "passive":
+		if CrawlContent.skills()[skill_id].kind != "passive":
 			active_skills.append(skill_id)
 	var action := _options(row, active_skills, rule.skill_id)
 	action.custom_minimum_size.x = 180
@@ -138,7 +138,7 @@ func _build_rule(actor: CrawlCombatant, index: int) -> void:
 func _options(parent: Control, values: Array, selected: String) -> OptionButton:
 	var control := OptionButton.new()
 	var labels := {"always": "Always", "self_hp_percent": "Self HP (%)", "self_hp": "Self HP (value)", "lowest_ally_hp_percent": "Lowest ally HP (%)", "lowest_ally_hp": "Lowest ally HP (value)", "self_mp_percent": "Self MP (%)", "enemy_group_count": "Enemy group count", "lowest_hp": "Lowest HP", "highest_hp": "Highest HP", "lowest_hp_percent": "Lowest HP (%)", "at_most": "At most", "at_least": "At least"}
-	var skills := CrawlCombatContent.skills()
+	var skills := CrawlContent.skills()
 	for value in values:
 		control.add_item(skills[value].display_name if skills.has(value) else labels.get(value, value.replace("_", " ").capitalize()))
 		control.set_item_metadata(control.item_count - 1, value)

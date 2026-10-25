@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CrawlContentCatalog" load_steps=75 format=3]
+[gd_resource type="Resource" script_class="CrawlContentCatalog" load_steps=87 format=3]
 
 [ext_resource type="Script" path="res://resources/ContentCatalog.gd" id="script"]
 [ext_resource type="Script" path="res://resources/CombatSkill.gd" id="skill_type"]
@@ -31,6 +31,18 @@
 [ext_resource type="Resource" path="res://data/skills/giant_slayer.tres" id="skills22"]
 [ext_resource type="Resource" path="res://data/skills/berserk.tres" id="skills23"]
 [ext_resource type="Resource" path="res://data/skills/aegis.tres" id="skills24"]
+[ext_resource type="Resource" path="res://data/skills/hoarder.tres" id="skills25"]
+[ext_resource type="Resource" path="res://data/skills/smoke_bomb.tres" id="skills26"]
+[ext_resource type="Resource" path="res://data/skills/cheap_shot.tres" id="skills27"]
+[ext_resource type="Resource" path="res://data/skills/charm.tres" id="skills28"]
+[ext_resource type="Resource" path="res://data/skills/battle_tempo.tres" id="skills29"]
+[ext_resource type="Resource" path="res://data/skills/weak_spot.tres" id="skills30"]
+[ext_resource type="Resource" path="res://data/skills/divine_intervention.tres" id="skills31"]
+[ext_resource type="Resource" path="res://data/skills/balance_life.tres" id="skills32"]
+[ext_resource type="Resource" path="res://data/skills/resurrect.tres" id="skills33"]
+[ext_resource type="Resource" path="res://data/skills/cleanse.tres" id="skills34"]
+[ext_resource type="Resource" path="res://data/skills/heroism.tres" id="skills35"]
+[ext_resource type="Resource" path="res://data/skills/group_heal.tres" id="skills36"]
 [ext_resource type="Resource" path="res://data/classes/warrior.tres" id="classes0"]
 [ext_resource type="Resource" path="res://data/classes/cleric.tres" id="classes1"]
 [ext_resource type="Resource" path="res://data/classes/mage.tres" id="classes2"]
@@ -77,7 +89,7 @@
 
 [resource]
 script = ExtResource("script")
-skills = Array[ExtResource("skill_type")]([ExtResource("skills0"), ExtResource("skills1"), ExtResource("skills2"), ExtResource("skills3"), ExtResource("skills4"), ExtResource("skills5"), ExtResource("skills6"), ExtResource("skills7"), ExtResource("skills8"), ExtResource("skills9"), ExtResource("skills10"), ExtResource("skills11"), ExtResource("skills12"), ExtResource("skills13"), ExtResource("skills14"), ExtResource("skills15"), ExtResource("skills16"), ExtResource("skills17"), ExtResource("skills18"), ExtResource("skills19"), ExtResource("skills20"), ExtResource("skills21"), ExtResource("skills22"), ExtResource("skills23"), ExtResource("skills24")])
+skills = Array[ExtResource("skill_type")]([ExtResource("skills0"), ExtResource("skills1"), ExtResource("skills2"), ExtResource("skills3"), ExtResource("skills4"), ExtResource("skills5"), ExtResource("skills6"), ExtResource("skills7"), ExtResource("skills8"), ExtResource("skills9"), ExtResource("skills10"), ExtResource("skills11"), ExtResource("skills12"), ExtResource("skills13"), ExtResource("skills14"), ExtResource("skills15"), ExtResource("skills16"), ExtResource("skills17"), ExtResource("skills18"), ExtResource("skills19"), ExtResource("skills20"), ExtResource("skills21"), ExtResource("skills22"), ExtResource("skills23"), ExtResource("skills24"), ExtResource("skills25"), ExtResource("skills26"), ExtResource("skills27"), ExtResource("skills28"), ExtResource("skills29"), ExtResource("skills30"), ExtResource("skills31"), ExtResource("skills32"), ExtResource("skills33"), ExtResource("skills34"), ExtResource("skills35"), ExtResource("skills36")])
 classes = Array[ExtResource("class_type")]([ExtResource("classes0"), ExtResource("classes1"), ExtResource("classes2"), ExtResource("classes3")])
 items = Array[ExtResource("item_type")]([ExtResource("items0"), ExtResource("items1"), ExtResource("items2"), ExtResource("items3"), ExtResource("items4"), ExtResource("items5"), ExtResource("items6"), ExtResource("items7")])
 enemies = Array[ExtResource("enemy_type")]([ExtResource("enemies0"), ExtResource("enemies1"), ExtResource("enemies2"), ExtResource("enemies3"), ExtResource("enemies4"), ExtResource("enemies5"), ExtResource("enemies6"), ExtResource("enemies7"), ExtResource("enemies8"), ExtResource("enemies9"), ExtResource("enemies10"), ExtResource("enemies11"), ExtResource("enemies12"), ExtResource("enemies13"), ExtResource("enemies14"), ExtResource("enemies15"), ExtResource("enemies16"), ExtResource("enemies17"), ExtResource("enemies18"), ExtResource("enemies19"), ExtResource("enemies20"), ExtResource("enemies21"), ExtResource("enemies22"), ExtResource("enemies23"), ExtResource("enemies24"), ExtResource("enemies25"), ExtResource("enemies26"), ExtResource("enemies27"), ExtResource("enemies28"), ExtResource("enemies29"), ExtResource("enemies30")])

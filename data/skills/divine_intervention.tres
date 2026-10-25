@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CrawlCombatSkill" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/CombatSkill.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+display_name = "Divine Intervention"
+element = "spirit"
+id = "divine_intervention"
+kind = "divine_intervention"
+mp_cost = 8
+power = 1
+reach = "ranged"
+status_chance = 100
+status_id = ""
+status_potency = 1
+status_turns = 1
+variance = 0
